@@ -1,0 +1,23 @@
+name: 'Integrity Sentry Guard'
+description: 'Automated environment variable auditing and secret detection for zero-trust pipelines.'
+inputs:
+  target_path:
+    description: 'The directory to scan'
+    required: false
+    default: '.'
+  fail_on_secrets:
+    description: 'Whether to fail the build if secrets are detected'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Sentry
+      run: npm install -g .
+      shell: bash
+      working-directory: ${{ github.action_path }}
+
+    - name: Run Integrity Scan
+      run: integrity-sentry ${{ inputs.target_path }}
+      shell: bash

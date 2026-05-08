@@ -1,0 +1,19 @@
+name: Security Integrity Guard
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  integrity-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Integrity Sentry
+        uses: ./ 
+        with:
+          target_path: '.'
+          fail_on_secrets: 'true'

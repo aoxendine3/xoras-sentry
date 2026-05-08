@@ -16,9 +16,34 @@ const isNoVerify = process.argv.includes('--no-verify');
 const isSwarm = process.argv.includes('--swarm');
 const isRuntime = process.argv.includes('--runtime');
 const isLock = process.argv.includes('--lock');
-const isReport = process.argv.includes('--report');
 const uploadIdx = process.argv.indexOf('--upload');
 const uploadUrl = uploadIdx !== -1 ? process.argv[uploadIdx + 1] : null;
+
+const passIdx = process.argv.indexOf('--password');
+const lockPassword = passIdx !== -1 ? process.argv[passIdx + 1] : null;
+
+// Modern hardware resistance targets (configurable)
+const PBKDF2_ITERATIONS = parseInt(process.env.INTEGRITY_SENTRY_ITERATIONS) || 600000;
+const crypto = require('crypto');
+
+/**
+ * Context-Aware Isolation Check
+ * Detects if Production variables are leaking into non-production shells.
+ */
+function verifyEnvironmentIsolation(vars) {
+    const isProductionContext = process.env.NODE_ENV === 'production';
+    const prodPatterns = [/PROD_/, /LIVE_/, /STRIPE_LIVE/, /AWS_PRODUCTION/];
+    const leaks = [];
+
+    if (!isProductionContext) {
+        vars.forEach(v => {
+            if (prodPatterns.some(p => p.test(v))) {
+                leaks.push(v);
+            }
+        });
+    }
+    return leaks;
+}
 
 async function generateLock() {
     const files = [
@@ -31,15 +56,22 @@ async function generateLock() {
         'lib/utils.cjs'
     ];
     const lockPath = path.join(process.cwd(), 'integrity.lock');
-    const lines = files.map(f => {
-        const fullPath = path.join(process.cwd(), f);
-        if (fs.existsSync(fullPath)) {
-            return `${getHash(fullPath)} ${f}`;
-        }
-        return null;
-    }).filter(Boolean);
-    fs.writeFileSync(lockPath, lines.join('\n') + '\n');
-    console.log(`${colors.green}✅ ${t('lock_generated') || 'Integrity lock generated.'}${colors.reset}`);
+    const lockData = {
+        timestamp: new Date().toISOString(),
+        files: files.map(f => {
+            const fullPath = path.join(process.cwd(), f);
+            return fs.existsSync(fullPath) ? { path: f, hash: getHash(fullPath) } : null;
+        }).filter(Boolean)
+    };
+
+    if (lockPassword) {
+        const salt = crypto.randomBytes(16).toString('hex');
+        const hash = crypto.pbkdf2Sync(lockPassword, salt, PBKDF2_ITERATIONS, 64, 'sha512').toString('hex');
+        lockData.governance = { hash, salt, iterations: PBKDF2_ITERATIONS };
+    }
+
+    fs.writeFileSync(lockPath, JSON.stringify(lockData, null, 2));
+    console.log(`${colors.green}✅ Integrity lock generated${lockPassword ? ' with Governance Password' : ''}.${colors.reset}`);
     process.exit(0);
 }
 
@@ -84,7 +116,7 @@ async function verifyRuntime() {
     }
 
     if (!runtimeAudit.success) {
-        console.error(`${colors.red}❌ Runtime Identity Violation Detected!${colors.reset}`);
+        console.error(`${colors.red}❌ Runtime Integrity Violation Detected!${colors.reset}`);
         runtimeAudit.violations.forEach(v => {
             console.log(`  [-] ${v.file}`);
             console.log(`      Expected: ${v.expected}`);
@@ -119,66 +151,8 @@ function upload(url, data) {
     });
 }
 
-async function scanForSecrets(dir) {
-    const SECRET_PATTERNS = [
-        /SG\.[a-zA-Z0-9_-]{20,}/g, // SendGrid
-        /AKIA[a-zA-Z0-9]{16}/g,     // AWS
-        /sk-[a-zA-Z0-9]{20,}/g,     // OpenAI
-        /AIza[a-zA-Z0-9_-]{35}/g,   // Google
-        /PRIVATE KEY/gi,            // Generic Private Key
-        /API_KEY\s*=\s*['"][a-zA-Z0-9_-]{20,}['"]/gi // Generic API Key Assignment
-    ];
-
-    const getFiles = (dir) => {
-        let results = [];
-        if (!fs.existsSync(dir)) return results;
-        const exclusions = ['node_modules', '.git', '.terraform', '.next', '.open-next', 'dist', 'out'];
-        if (exclusions.some(exc => dir.includes(exc))) return results;
-        const list = fs.readdirSync(dir);
-        list.forEach(file => {
-            file = path.join(dir, file);
-            try {
-                const stat = fs.statSync(file);
-                if (stat && stat.isDirectory()) {
-                    results = results.concat(getFiles(file));
-                } else {
-                    // Ignore binaries and large assets
-                    const isBinary = file.match(/\.(bin|exe|png|jpg|jpeg|gif|ico|pdf|zip|gz|tar|tgz|x5|dylib|so|dll)$/i);
-                    if (!isBinary) results.push(file);
-                }
-            } catch (e) {}
-        });
-        return results;
-    };
-
-    const files = getFiles(dir);
-    let leaks = [];
-
-    for (const file of files) {
-        if (file.includes('node_modules') || file.includes('.git')) continue;
-        // Skip self-scan to avoid matching regex patterns as 'secrets'
-        if (file === __filename) continue; 
-        
-        const content = fs.readFileSync(file, 'utf-8');
-        SECRET_PATTERNS.forEach(pattern => {
-            const matches = content.match(pattern);
-            if (matches) {
-                leaks.push({ file, matches });
-            }
-        });
-    }
-    return leaks;
-}
-
 async function run() {
     const targetDir = process.argv.filter(a => !a.startsWith('--'))[2] ? path.resolve(process.argv.filter(a => !a.startsWith('--'))[2]) : process.cwd();
-
-    const leaks = await scanForSecrets(targetDir);
-    if (leaks.length > 0) {
-        console.error('\n❌ CRITICAL: HARDCODED SECRETS DETECTED:');
-        leaks.forEach(l => console.error(` - ${l.file}: [${l.matches.join(', ')}]`));
-        process.exit(1);
-    }
 
     if (isSwarm) {
         await initiateSwarm(targetDir);
@@ -202,7 +176,20 @@ async function run() {
         }
     }
 
-    const { vars, hardcodedSecrets } = scanSource(targetDir);
+    const { vars, hardcodedSecrets } = await scanSource(targetDir);
+    
+    // Check for Environment Isolation Violations
+    const isolationLeaks = verifyEnvironmentIsolation(vars);
+    if (isolationLeaks.length > 0) {
+        console.warn(`\n${colors.yellow}⚠️  ISOLATION WARNING: Production variables detected in non-production context:${colors.reset}`);
+        isolationLeaks.forEach(l => console.warn(` - ${l}`));
+    }
+
+    if (hardcodedSecrets.length > 0) {
+        console.error('\n❌ CRITICAL: HARDCODED SECRETS DETECTED:');
+        hardcodedSecrets.forEach(l => console.error(` - ${l.file} [Type: ${l.type}]`));
+        process.exit(1);
+    }
     const { missingFromEnv, missingFromAll, activeEnv, exampleEnv } = audit(targetDir, vars);
     
     // Filter framework and internal noise

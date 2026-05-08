@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XORAS // COMMAND_DASHBOARD [v1.1.0]</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --text: #FFFFFF;
+            --accent: #FF3B30;
+            --grid: #1A1A1A;
+            --font: 'IBM Plex Mono', monospace;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            margin: 0;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .panel {
+            border: 1px solid var(--grid);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            border-bottom: 2px solid var(--text);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-binary {
+            background: var(--text);
+            color: var(--bg);
+            padding: 5px 15px;
+            font-weight: bold;
+        }
+
+        .log-stream {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 12px;
+            background: #050505;
+            padding: 10px;
+            border: 1px solid #111;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            border: 1px solid var(--grid);
+            padding: 15px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        h2 { font-size: 14px; margin-top: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .red { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>XORAS_INSTITUTIONAL_CORE // FINALITY_MONITOR</div>
+        <div class="status-binary">SYSTEM: SECURE</div>
+    </div>
+
+    <div class="panel">
+        <h2>System Status</h2>
+        <div class="metric-card">
+            <div>INTEGRITY_INDEX</div>
+            <div class="metric-value">100%</div>
+        </div>
+        <div class="metric-card">
+            <div>ACTIVE_AGENTS</div>
+            <div class="metric-value">01</div>
+        </div>
+        <div class="metric-card">
+            <div>REVENUE_LEAKS</div>
+            <div class="metric-value">00</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Live Audit Stream</h2>
+        <div id="log" class="log-stream">
+            <div>[2026-05-08 17:16:00] SENTRY_AGENT: INITIATED</div>
+            <div>[2026-05-08 17:16:30] AUDIT_PASS: DETERMINISTIC_STRUCTURAL_INTEGRITY</div>
+            <div>[2026-05-08 17:17:00] REVENUE_LEGER: IDEMPOTENCY_VERIFIED</div>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder for live websocket/file-polling integration
+        console.log("Dashboard initialized. Waiting for Sentry Agent uplink...");
+    </script>
+</body>
+</html>
