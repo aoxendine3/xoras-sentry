@@ -2,70 +2,40 @@ const fs = require('fs');
 const path = require('path');
 const { scanSource } = require('../lib/core/scanner.cjs');
 
-const fuzzDir = path.join(__dirname, 'fuzz-targets');
-
+const fuzzDir = path.join(__dirname, 'fuzz-sandbox');
 if (!fs.existsSync(fuzzDir)) fs.mkdirSync(fuzzDir);
 
-/**
- * Generate a massive file with one giant line to test line-length limits.
- */
-function generateGiantLineFile() {
-    const filePath = path.join(fuzzDir, 'giant_line.js');
-    const content = 'const x = "' + 'A'.repeat(1000000) + '";';
-    fs.writeFileSync(filePath, content);
-    return filePath;
-}
-
-/**
- * Generate a file with broken AST syntax.
- */
-function generateBrokenSyntaxFile() {
-    const filePath = path.join(fuzzDir, 'broken_syntax.js');
-    const content = 'const { API_KEY = process.env; // Missing brace';
-    fs.writeFileSync(filePath, content);
-    return filePath;
-}
-
-/**
- * Generate a file with nested, malicious traversal patterns.
- */
-function generateTraversalNesting() {
-    const filePath = path.join(fuzzDir, 'traversal.js');
-    const content = 'process.env["../../SECRET"] = "value";';
-    fs.writeFileSync(filePath, content);
-    return filePath;
-}
-
-async function runFuzzTest() {
-    console.log('🚀 Starting Institutional Fuzz Audit...');
-    
-    const targets = [
-        generateGiantLineFile(),
-        generateBrokenSyntaxFile(),
-        generateTraversalNesting()
-    ];
+async function runFuzzAudit() {
+    console.log('🚀 INITIATING PATHOLOGICAL FUZZING...');
 
     try {
-        console.log('--- Testing Robustness ---');
-        const vars = new Set();
-        const secrets = [];
-        await scanSource(fuzzDir, vars, secrets);
+        // 1. Binary Blob File
+        const binaryFile = path.join(fuzzDir, 'poison.bin');
+        fs.writeFileSync(binaryFile, Buffer.from([0x00, 0xFF, 0xDE, 0xAD, 0xBE, 0xEF]));
         
-        console.log('✅ PASS: Scanner handled giant lines without OOM.');
-        console.log('✅ PASS: Scanner survived broken AST syntax (Fallback engaged).');
-        console.log('✅ PASS: Traversal patterns isolated.');
-        
-        console.log('\nAudit Findings during Fuzz:');
-        console.log('Detected Vars:', Array.from(vars));
-        
+        // 2. Encoding Bomb (UTF-16)
+        const utf16File = path.join(fuzzDir, 'encoding_bomb.js');
+        const content = Buffer.from('console.log("fail");', 'utf16le');
+        fs.writeFileSync(utf16File, content);
+
+        // 3. Massive Null-Padded File
+        const nullFile = path.join(fuzzDir, 'null_bomb.js');
+        fs.writeFileSync(nullFile, '\0'.repeat(10000));
+
+        console.log('[FUZZ] Scanning Pathological Payloads...');
+        const start = Date.now();
+        await scanSource(fuzzDir);
+        const duration = Date.now() - start;
+
+        console.log(`✅ PASS: Engine survived pathological fuzzing in ${duration}ms.`);
+
     } catch (e) {
-        console.error('❌ FAIL: Scanner crashed during fuzzing!', e);
+        console.error('❌ FUZZ CRASH:', e.message);
         process.exit(1);
     } finally {
         // Cleanup
-        targets.forEach(f => fs.unlinkSync(f));
-        fs.rmdirSync(fuzzDir);
+        console.log('🏛️  FUZZING COMPLETE.');
     }
 }
 
-runFuzzTest();
+runFuzzAudit();

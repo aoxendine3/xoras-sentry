@@ -1,0 +1,17 @@
+{
+  "schemas": {
+    "STRIPE_SECRET_KEY": {
+      "prefix": "sk_live_",
+      "minLength": 32,
+      "description": "Stripe Live Secret Key (Production Only)"
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "regex": "^AKIA[A-Z0-9]{16}$",
+      "description": "AWS IAM Access Key"
+    },
+    "PORT": {
+      "regex": "^[0-9]{4,5}$",
+      "description": "Service Port Number"
+    }
+  }
+}
