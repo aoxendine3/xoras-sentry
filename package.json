@@ -1,0 +1,16 @@
+{
+  "name": "integrity-sentry-core",
+  "version": "1.0.0",
+  "description": "Environment integrity and secret leakage sentry for CI/CD pipelines.",
+  "main": "bin/env-integrity-sentry.cjs",
+  "bin": {
+    "integrity-sentry": "./bin/env-integrity-sentry.cjs"
+  },
+  "scripts": {
+    "test": "node --test tests/audit.test.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

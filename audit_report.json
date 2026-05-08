@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-05-08T17:45:12.929Z",
+  "summary": {
+    "unexpected_missing": 0,
+    "secrets": 0,
+    "orphans": 1
+  },
+  "findings": {
+    "missingFromEnv": [],
+    "missingFromAll": [],
+    "hardcodedSecrets": [],
+    "orphans": [
+      "API_KEY"
+    ]
+  }
+}
