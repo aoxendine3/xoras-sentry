@@ -10,7 +10,7 @@ test('Env-Integrity-Sentry Audit Logic', async (t) => {
     
     // Setup temporary test project
     if (!fs.existsSync(testDir)) fs.mkdirSync(testDir);
-    fs.writeFileSync(path.join(testDir, 'index.js'), "const apiKey = process.env.API_KEY;\nconst secret = 'sk-12345678901234567890';");
+    fs.writeFileSync(path.join(testDir, 'index.js'), "const apiKey = process.env.API_KEY;\nconst DUMMY_SECRET = 'sk-XXXXX-TEST-VALUE';");
     fs.writeFileSync(path.join(testDir, '.env'), "DATABASE_URL=postgres://localhost:5432/db");
     fs.writeFileSync(path.join(testDir, '.env.example'), "API_KEY=\nDATABASE_URL=");
 

@@ -2,7 +2,11 @@
 
 const fs = require('fs');
 const path = require('path');
-const { scanSource } = require('../lib/core/scanner.cjs');
+const { scanSource, SECRET_PATTERNS } = require('../lib/core/scanner.cjs');
+const { auditHistory } = require('../lib/core/history.cjs');
+const { runJanitor } = require('../lib/core/janitor.cjs');
+const { getIgnoreList } = require('../lib/core/policy.cjs');
+const { verifyRegistry, signState } = require('../lib/core/registry.cjs');
 const { signArtifact } = require('../lib/core/attestation.cjs');
 
 const colors = {
@@ -18,12 +22,24 @@ const colors = {
 
 async function main() {
     const args = process.argv.slice(2);
-    const targetDir = args[0] || '.';
-    const isVerify = args.includes('--verify');
-    const isWarnOnly = args.includes('--warn-only');
+    
+    // Improved Argument Parsing: Filter flags to find the target directory
+    const flags = args.filter(a => a.startsWith('--'));
+    const nonFlags = args.filter(a => !a.startsWith('--'));
+    
+    const targetDir = path.resolve(nonFlags[0] || '.');
+    const isVerify = flags.includes('--verify');
+    const isWarnOnly = flags.includes('--warn-only');
+    const isDelta = flags.includes('--delta');
+    const isSign = flags.includes('--sign');
+    const isJson = flags.includes('--json');
+    const isHistory = flags.includes('--history');
+    const isZoom = flags.includes('--zoom');
 
-    console.log(`\n${colors.bright}🏛️  XORAS INTEGRITY SENTRY${colors.reset}`);
-    console.log(`${colors.dim}Target: ${path.resolve(targetDir)}${colors.reset}\n`);
+    if (!isJson) {
+        console.log(`\n${colors.bright}🏛️  XORAS INTEGRITY SENTRY${colors.reset}`);
+        console.log(`${colors.dim}Target: ${path.resolve(targetDir)}${colors.reset}\n`);
+    }
 
     try {
         if (isVerify) {
@@ -33,7 +49,19 @@ async function main() {
             // (Verification logic here)
         }
 
-        const { vars, hardcodedSecrets, schemaViolations } = await scanSource(targetDir);
+        let { vars, hardcodedSecrets, schemaViolations } = await scanSource(targetDir);
+        
+        // Level 4 (L4) History Audit
+        if (isHistory) {
+            if (!isJson) console.log(`${colors.dim}Auditing Git History (L4)...${colors.reset}`);
+            const historyLeaks = await auditHistory(targetDir, SECRET_PATTERNS);
+            hardcodedSecrets.push(...historyLeaks);
+        }
+
+        // Filter by Zoom if active (Only show High-Value Big 4)
+        if (isZoom) {
+            hardcodedSecrets = hardcodedSecrets.filter(s => ['AWS', 'Stripe', 'OpenAI', 'Google', 'MALWARE_HEURISTIC'].some(type => s.type.includes(type)));
+        }
         
         // 1. HIGH: Hardcoded Secrets
         if (hardcodedSecrets.length > 0) {
@@ -52,6 +80,26 @@ async function main() {
         }
 
         const totalIssues = hardcodedSecrets.length + schemaViolations.length;
+
+        if (isJson) {
+            console.log(JSON.stringify({
+                target: path.resolve(targetDir),
+                timestamp: Date.now(),
+                summary: {
+                    high: hardcodedSecrets.length,
+                    medium: schemaViolations.length,
+                    low: 0,
+                    result: totalIssues > 0 ? (isWarnOnly ? 'WARNING' : 'FAILED') : 'PASSED'
+                },
+                findings: {
+                    hardcodedSecrets,
+                    schemaViolations
+                }
+            }, null, 2));
+            process.exit(totalIssues > 0 && !isWarnOnly ? 1 : 0);
+            return;
+        }
+
         console.log(`${colors.bright}Summary:${colors.reset} HIGH: ${hardcodedSecrets.length} | MEDIUM: ${schemaViolations.length}`);
         
         if (totalIssues > 0) {
@@ -63,9 +111,12 @@ async function main() {
                 process.exit(1);
             }
         } else {
-            console.log(`\n${colors.green}${colors.bright}Result: PASSED${colors.reset}\n`);
+            console.log(`\n${colors.green}${colors.bright}Result: PASSED${colors.reset}`);
+            console.log(`${colors.dim}Note: No matches under current rules, scope, and filters.${colors.reset}\n`);
         }
 
+        // Self-Healing: Run Janitor
+        await runJanitor(targetDir);
     } catch (e) {
         // Robustness Layer: Graceful Failure
         console.error(`\n${colors.yellow}[ROBUSTNESS_GUARD] Audit Interrupted: ${e.message}${colors.reset}`);

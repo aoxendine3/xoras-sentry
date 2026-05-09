@@ -1,18 +1,25 @@
 {
   "name": "integrity-sentry-core",
-  "version": "1.0.0",
-  "description": "Environment integrity and secret leakage sentry for CI/CD pipelines.",
-  "main": "bin/env-integrity-sentry.cjs",
+  "version": "1.0.0-rc1",
+  "description": "Automated Credential Auditing and Configuration Security",
+  "main": "lib/core/scanner.cjs",
   "bin": {
-    "integrity-sentry": "./bin/env-integrity-sentry.cjs"
+    "integrity-sentry": "bin/env-integrity-sentry.cjs"
   },
   "scripts": {
-    "test": "node --test tests/audit.test.cjs"
+    "test": "node tests/audit.test.cjs",
+    "monitor": "node bin/sentry-agent.cjs",
+    "audit": "node bin/env-integrity-sentry.cjs ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "keywords": [
+    "security",
+    "credentials",
+    "ast",
+    "compliance",
+    "auditing"
+  ],
+  "author": "XORAS",
+  "license": "MIT",
   "dependencies": {
     "acorn": "^8.16.0",
     "acorn-walk": "^8.3.5"

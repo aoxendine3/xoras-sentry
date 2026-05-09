@@ -1,0 +1,1 @@
+const key = process.env[`${"STRIPE"}_KEY`];
