@@ -1,0 +1,23 @@
+{
+  "name": "xoras-sentry",
+  "version": "1.2.0",
+  "description": "High-Precision Structural Secret Scanner (Core Library)",
+  "main": "src/scanner.cjs",
+  "files": [
+    "src/",
+    ".sentry-schema.json",
+    "README.md"
+  ],
+  "keywords": [
+    "security",
+    "credentials",
+    "ast",
+    "scanning"
+  ],
+  "author": "Anthony Oxendine",
+  "license": "MIT",
+  "dependencies": {
+    "acorn": "^8.16.0",
+    "acorn-walk": "^8.3.5"
+  }
+}

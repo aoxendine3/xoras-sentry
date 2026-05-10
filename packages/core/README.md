@@ -40,7 +40,7 @@ npx xoras-sentry . --html
 - [Technical Specification](docs/TECHNICAL_SPEC.md)
 - [Operational Guide](docs/OPERATIONAL_GUIDE.md)
 - [Integrity Manifesto](docs/INTEGRITY_MANIFESTO.md)
-- Licenses: [MIT (Core)](packages/core/LICENSE) | [BSL 1.1 (Integrations/UI)](packages/integrations/LICENSE)
+- [XORAS Security License](XORAS_SECURITY_LICENSE.md)
 
 ---
 

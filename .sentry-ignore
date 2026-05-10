@@ -1,0 +1,4 @@
+# XORAS SENTRY Ignore Rules
+node_modules
+.git
+test-file

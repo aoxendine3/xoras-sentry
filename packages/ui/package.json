@@ -1,0 +1,13 @@
+{
+  "name": "xoras-sentry-ui",
+  "version": "1.2.0",
+  "description": "Visual Dashboard for XORAS Sentry",
+  "main": "src/reporter.cjs",
+  "keywords": [
+    "security",
+    "dashboard",
+    "visualization"
+  ],
+  "author": "Anthony Oxendine",
+  "license": "MIT"
+}

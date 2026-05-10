@@ -13,7 +13,7 @@ test.before(() => {
 
 test('B: Baseline - Standard Detection', async () => {
     const filePath = path.join(TEST_DIR, 'baseline.js');
-    fs.writeFileSync(filePath, 'const key = "sk_live_123456789012345678901234";');
+    fs.writeFileSync(filePath, 'const key = "sk_test_123456789012345678901234";');
     const { hardcodedSecrets } = await scanSource(TEST_DIR);
     assert.strictEqual(hardcodedSecrets.length, 1, 'Should detect standard Stripe key');
 });
@@ -62,7 +62,7 @@ test('C: Coverage - Deep Nesting Guard', async () => {
         currentDir = path.join(currentDir, `depth_${i}`);
         fs.mkdirSync(currentDir, { recursive: true });
     }
-    fs.writeFileSync(path.join(currentDir, 'deep.js'), 'const k = "sk_live_123456789012345678901234";');
+    fs.writeFileSync(path.join(currentDir, 'deep.js'), 'const k = "sk_test_123456789012345678901234";');
     
     const { hardcodedSecrets } = await scanSource(TEST_DIR);
     // Max depth is 20, so deep.js should be ignored

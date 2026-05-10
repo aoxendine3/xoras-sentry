@@ -3,7 +3,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 /**
- * Autonomous Janitor: Prune system bloat and maintain zero-footprint.
+ * Cleanup old audit artifacts and transient files.
  */
 async function runJanitor(targetDir) {
     const findings = [];
@@ -25,7 +25,7 @@ async function runJanitor(targetDir) {
         // 3. Prune Old Audit Artifacts
         const files = fs.readdirSync(targetDir);
         files.forEach(file => {
-            if (file.includes('audit') || file.includes('report') || (file.startsWith('snapshot-') && file.endsWith('.json'))) {
+            if ((file.includes('audit') || file.includes('report') || (file.startsWith('snapshot-') && file.endsWith('.json'))) && !file.endsWith('.html')) {
                 fs.unlinkSync(path.join(targetDir, file));
                 findings.push(`[JANITOR] Pruned artifact: ${file}`);
             }

@@ -1,0 +1,25 @@
+{
+  "name": "xoras-sentry-cli",
+  "version": "1.2.0",
+  "description": "CLI Wrapper for XORAS Sentry",
+  "bin": {
+    "xoras-sentry": "bin/cli.cjs"
+  },
+  "files": [
+    "bin/",
+    "README.md"
+  ],
+  "scripts": {
+    "audit": "node bin/cli.cjs ."
+  },
+  "keywords": [
+    "security",
+    "cli",
+    "audit"
+  ],
+  "author": "Anthony Oxendine",
+  "license": "MIT",
+  "dependencies": {
+    "xoras-sentry": "file:../core"
+  }
+}

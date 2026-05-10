@@ -2,14 +2,14 @@
 
 const fs = require('fs');
 const path = require('path');
-const { scanSource, SECRET_PATTERNS } = require('../lib/core/scanner.cjs');
-const { auditHistory } = require('../lib/core/history.cjs');
-const { runJanitor } = require('../lib/core/janitor.cjs');
-const { getIgnoreList } = require('../lib/core/policy.cjs');
-const { verifyRegistry, signState } = require('../lib/core/registry.cjs');
-const { signArtifact } = require('../lib/core/attestation.cjs');
+const { scanSource, SECRET_PATTERNS } = require('xoras-sentry');
+// (Integrations and UI will be updated as they are extracted)
+const { generateHtmlReport } = require('../../ui/src/reporter.cjs');
+const { runJanitor } = require('../../core/src/janitor.cjs');
+const { auditHistory } = require('../../core/src/history.cjs');
 
 const colors = {
+// ... (rest of the code)
     reset: "\x1b[0m",
     bright: "\x1b[1m",
     red: "\x1b[31m",
@@ -35,9 +35,33 @@ async function main() {
     const isJson = flags.includes('--json');
     const isHistory = flags.includes('--history');
     const isZoom = flags.includes('--zoom');
+    const isHtml = flags.includes('--html');
+
+    if (flags.includes('--help') || flags.includes('-h')) {
+        console.log(`
+${colors.bright}XORAS SENTRY // High-Precision Structural Auditor${colors.reset}
+
+${colors.bright}Usage:${colors.reset} xoras-sentry [dir] [flags]
+
+${colors.bright}Flags:${colors.reset}
+  --html         Generate a professional HTML audit report.
+  --json         Output results in JSON format with AST traces.
+  --delta        Scan only modified files in the current branch.
+  --history      Perform a deep git history audit for legacy leaks.
+  --warn-only    Report findings but do not exit with failure code.
+  --sign         Generate a cryptographically signed audit report.
+  --verify       Verify current state against a signed baseline.
+
+${colors.bright}Features:${colors.reset}
+  - Hallucination Guard: Detect undocumented environment variables.
+  - AST Tracer: Human-readable transparency for detection paths.
+  - Proprietary Patterns: Dynamic custom regex loading.
+`);
+        process.exit(0);
+    }
 
     if (!isJson) {
-        console.log(`\n${colors.bright}🏛️  XORAS INTEGRITY SENTRY${colors.reset}`);
+        console.log(`\n${colors.bright}XORAS SENTRY // v1.2.0${colors.reset}`);
         console.log(`${colors.dim}Target: ${path.resolve(targetDir)}${colors.reset}\n`);
     }
 
@@ -49,7 +73,7 @@ async function main() {
             // (Verification logic here)
         }
 
-        let { vars, hardcodedSecrets, schemaViolations } = await scanSource(targetDir);
+        let { vars, hardcodedSecrets, schemaViolations, hallucinations } = await scanSource(targetDir);
         
         // Level 4 (L4) History Audit
         if (isHistory) {
@@ -63,23 +87,28 @@ async function main() {
             hardcodedSecrets = hardcodedSecrets.filter(s => ['AWS', 'Stripe', 'OpenAI', 'Google', 'MALWARE_HEURISTIC'].some(type => s.type.includes(type)));
         }
         
-        // 1. HIGH: Hardcoded Secrets
         if (hardcodedSecrets.length > 0) {
-            console.log(`${colors.red}${colors.bright}[HIGH] Hardcoded Secret Detected${colors.reset}`);
+            console.log(`${colors.red}${colors.bright}HIGH: Hardcoded Secrets Found${colors.reset}`);
             hardcodedSecrets.forEach(s => console.log(`File: ${s.file}:${s.line} [Type: ${s.type}]`));
-            console.log(`\n${colors.bright}Action: Move to env vars and rotate keys.${colors.reset}`);
-            console.log(`${colors.border}────────────────────────────${colors.reset}\n`);
         }
 
-        // 2. MEDIUM: Configuration Mismatch
         if (schemaViolations.length > 0) {
-            console.log(`${colors.yellow}${colors.bright}[MEDIUM] Configuration Mismatch${colors.reset}`);
+            console.log(`${colors.yellow}${colors.bright}MEDIUM: Schema Mismatch${colors.reset}`);
             schemaViolations.forEach(v => console.log(`Variable: ${v.var} [${v.error}]`));
-            console.log(`\n${colors.bright}Action: Correct variable format.${colors.reset}`);
-            console.log(`${colors.border}────────────────────────────${colors.reset}\n`);
         }
 
-        const totalIssues = hardcodedSecrets.length + schemaViolations.length;
+        if (hallucinations.length > 0) {
+            console.log(`${colors.cyan}${colors.bright}LOW: Undocumented Variables${colors.reset}`);
+            hallucinations.forEach(h => console.log(`Variable: ${h.var} in ${h.file}:${h.line}`));
+        }
+
+        const totalIssues = hardcodedSecrets.length + schemaViolations.length + hallucinations.length;
+        const result = totalIssues > 0 ? (isWarnOnly ? 'WARNING' : 'FAILED') : 'PASSED';
+
+        if (isHtml) {
+            const reportPath = generateHtmlReport(targetDir, { hardcodedSecrets, schemaViolations, hallucinations }, { high: hardcodedSecrets.length, medium: schemaViolations.length, low: hallucinations.length, result });
+            if (!isJson) console.log(`${colors.green}Report generated: ${reportPath}${colors.reset}`);
+        }
 
         if (isJson) {
             console.log(JSON.stringify({
@@ -88,19 +117,20 @@ async function main() {
                 summary: {
                     high: hardcodedSecrets.length,
                     medium: schemaViolations.length,
-                    low: 0,
+                    low: hallucinations.length,
                     result: totalIssues > 0 ? (isWarnOnly ? 'WARNING' : 'FAILED') : 'PASSED'
                 },
                 findings: {
                     hardcodedSecrets,
-                    schemaViolations
+                    schemaViolations,
+                    hallucinations
                 }
             }, null, 2));
             process.exit(totalIssues > 0 && !isWarnOnly ? 1 : 0);
             return;
         }
 
-        console.log(`${colors.bright}Summary:${colors.reset} HIGH: ${hardcodedSecrets.length} | MEDIUM: ${schemaViolations.length}`);
+        console.log(`${colors.bright}Summary:${colors.reset} HIGH: ${hardcodedSecrets.length} | MEDIUM: ${schemaViolations.length} | LOW: ${hallucinations.length}`);
         
         if (totalIssues > 0) {
             if (isWarnOnly) {

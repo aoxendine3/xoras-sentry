@@ -21,3 +21,20 @@ Hardcoded safe-keys have been replaced with a `.sentry-ignore` manifest, allowin
 
 ---
 **Status: RECONCILED. | Baseline: ZERO_LEAK.**
+
+> [!WARNING]
+> **Audit Trail Discontinuity:** The file `snapshot-audit-final.json` (L4 JSON telemetry) was identified as missing during the reconciliation phase. This file was the primary output of the `integrity-sentry . --json` audit run. While the `RECONCILIATION_v1.md` ledger persists the manual audit results, the high-fidelity machine-readable baseline is currently lost.
+
+OPEN: 065f602 — 10,537 files, 2.2M deletions. Confirmed to include source files.
+Full scope unverified. Files present on disk. Not confirmed as node_modules-only.
+
+### 4. Code Duplication & Maintenance
+> [!NOTE]
+> **Logic Parity:** The `audit`, `parseEnv`, and `classify` functions have been synchronized from `env-integrity-sentry` to resolve test failures in `integrity-sentry-core`. 
+> **Authoritative Source:** `integrity-sentry-core/lib/core/` is now the authoritative location for these core utilities. Future updates to `env-integrity-sentry` should pull from this baseline.
+
+### 5. Performance Optimization: Fast-Path Verification
+> [!TIP]
+> **Optimization:** A pre-AST regex check was implemented to skip files without potential secrets or `process.env` references.
+> **Safety:** Verified against `tests/spectrum.test.cjs` (Attack 2: AST Shadowing). The check `content.includes('process.env')` ensures that dynamic key resolution is NOT bypassed.
+> **Coverage:** The `combinedRegex` utilizes the full `SECRET_PATTERNS` manifest, ensuring no pattern-based evasion is introduced.

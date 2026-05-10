@@ -1,0 +1,13 @@
+{
+  "name": "xoras-sentry-integrations",
+  "version": "1.2.0",
+  "description": "CI/CD and Git Hooks for XORAS Sentry",
+  "keywords": [
+    "security",
+    "git",
+    "github-actions",
+    "husky"
+  ],
+  "author": "Anthony Oxendine",
+  "license": "MIT"
+}
