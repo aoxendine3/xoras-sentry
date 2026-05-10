@@ -1,9 +1,9 @@
 # XORAS SENTRY // [v1.2.0]
 
-### High-Precision Secret Scanning and Integrity Auditing
-*Local-first. No cloud. No compromise.*
+### Sovereign, Local-First Secret Auditing for JS/TS
+*Zero cloud. No account required. Schema-based precision.*
 
-`xoras-sentry` is a high-fidelity structural auditor designed to prevent credential leaks and solve the critical risks of AI-generated code. It combines deep AST analysis with local-first performance to provide a zero-trust security layer for modern development workflows.
+`xoras-sentry` is a professional-grade structural auditor built for developers who refuse to send their source code to the cloud for security checks. While standard scanners rely on pattern matching, XORAS combines deep AST analysis with **Schema-Based Hallucination Detection** to catch configuration drift and hidden leaks before they leave your machine.
 
 ---
 
@@ -45,6 +45,12 @@ npx xoras-sentry . --html
 ---
 
 ## 💎 Tiers & Licensing
+
+## 🏆 Founding Users
+*Special thanks to the early-access partners helping steer the XORAS roadmap.*
+- (10 Spots Available - Join the Founding Tier)
+
+---
 
 | Tier | Features | Price |
 | :--- | :--- | :--- |

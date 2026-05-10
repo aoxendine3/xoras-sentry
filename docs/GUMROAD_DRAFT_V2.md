@@ -26,6 +26,20 @@ Our structural engine is optimized for speed. In benchmarks on mid-size reposito
 
 ---
 
+## 🆚 How We Compare
+| Feature | XORAS SENTRY | Snyk | Trufflehog | Semgrep |
+| :--- | :---: | :---: | :---: | :---: |
+| **AST-Level Precision** | ✅ | ✅ | ❌ | ✅ |
+| **Schema Validation** | ✅ | ❌ | ❌ | ❌ |
+| **Local-First (No Cloud)** | ✅ | ❌ | ✅ | ✅ |
+| **HTML Audit Reports** | ✅ | ✅ | ❌ | ❌ |
+| **Commercial Protection** | ✅ | ✅ | ❌ | ✅ |
+| **No Account Required** | ✅ | ❌ | ✅ | ✅ |
+
+*Note: Competitor data based on published documentation as of May 2026. Spot-check recommended for recent updates.*
+
+---
+
 ## 💎 Choose Your Tier
 
 ### **Free Tier (Open Source)**

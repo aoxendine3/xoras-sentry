@@ -1,6 +1,6 @@
 {
   "name": "xoras-sentry-ui",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Visual Dashboard for XORAS Sentry",
   "main": "src/reporter.cjs",
   "keywords": [
