@@ -4,28 +4,28 @@
       "name": "Fireship",
       "platform": "YouTube",
       "tier": 1,
-      "status": "PENDING",
+      "status": "SENT",
       "niche": "Technical Breakdowns"
     },
     {
       "name": "Theo - t3.gg",
       "platform": "X/YouTube",
       "tier": 1,
-      "status": "PENDING",
+      "status": "SENT",
       "niche": "Web Dev Influencer"
     },
     {
       "name": "LiveOverflow",
       "platform": "YouTube",
       "tier": 2,
-      "status": "PENDING",
+      "status": "SENT",
       "niche": "Security Research"
     },
     {
       "name": "Pieter Levels",
       "platform": "X",
       "tier": 3,
-      "status": "PENDING",
+      "status": "SENT",
       "niche": "Indie Hackers"
     }
   ]

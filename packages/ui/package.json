@@ -1,6 +1,6 @@
 {
   "name": "xoras-sentry-ui",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Visual Dashboard for XORAS Sentry",
   "main": "src/reporter.cjs",
   "keywords": [
@@ -9,5 +9,5 @@
     "visualization"
   ],
   "author": "Anthony Oxendine",
-  "license": "MIT"
+  "license": "BSL-1.1"
 }

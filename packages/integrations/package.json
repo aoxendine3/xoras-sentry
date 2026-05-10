@@ -1,6 +1,6 @@
 {
   "name": "xoras-sentry-integrations",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "CI/CD and Git Hooks for XORAS Sentry",
   "keywords": [
     "security",
@@ -8,6 +8,13 @@
     "github-actions",
     "husky"
   ],
+  "main": "payments/stripe.cjs",
+  "files": [
+    "payments/",
+    "hook/",
+    "action/",
+    "README.md"
+  ],
   "author": "Anthony Oxendine",
-  "license": "MIT"
+  "license": "BSL-1.1"
 }

@@ -35,7 +35,7 @@ function generateHtmlReport(targetDir, findings, summary) {
     <div class="header">
         <div>
             <h1 style="margin:0; font-size: 2rem;">XORAS SENTRY</h1>
-            <p style="margin:5px 0 0; color: #7f8c8d;">Institutional Integrity Audit Report</p>
+            <p style="margin:5px 0 0; color: #7f8c8d;">Integrity Audit Report</p>
         </div>
         <div style="text-align: right;">
             <p style="margin:0; font-weight: bold;">${summary.result}</p>
@@ -84,7 +84,7 @@ function generateHtmlReport(targetDir, findings, summary) {
     `).join('')}
 
     <div class="footer">
-        XORAS SENTRY v1.2.0 | Transparency Layer Enabled | Local-First Security Baseline
+        XORAS SENTRY v1.2.1 | Transparency Layer Enabled | Local-First Security Baseline
     </div>
 </body>
 </html>

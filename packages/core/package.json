@@ -1,6 +1,6 @@
 {
   "name": "xoras-sentry",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "High-Precision Structural Secret Scanner (Core Library)",
   "main": "src/scanner.cjs",
   "files": [

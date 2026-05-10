@@ -19,7 +19,7 @@ jobs:
           
       - name: Run XORAS SENTRY Audit
         run: |
-          npm install -g integrity-sentry-core
+          npm install -g xoras-sentry-cli
           xoras-sentry . --delta --json > audit-results.json
           
       - name: Upload Audit Report
