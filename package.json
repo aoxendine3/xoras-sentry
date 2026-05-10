@@ -4,7 +4,8 @@
   "private": true,
   "description": "Professional Integrity Auditing Suite (Monorepo)",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "test": "npm test --workspaces",
