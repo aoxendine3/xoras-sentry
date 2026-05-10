@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XORAS Sentry // Institutional Code Integrity</title>
+    <meta name="description" content="AST-powered, local-first security auditing for the sovereign software engineer. Catch hardcoded secrets and hallucinations before the market does.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --border: #1a1a1a;
+            --text: #ffffff;
+            --text-dim: #888888;
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.3);
+            --red: #ff3b30;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        /* NAV */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(5,5,5,0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+        .nav-logo {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+
+        /* HERO */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: -1;
+            opacity: 0.5;
+        }
+        .badge {
+            display: inline-block;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+        h1 {
+            font-size: clamp(40px, 8vw, 72px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 0.95;
+            margin-bottom: 32px;
+            background: linear-gradient(180deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 20px;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 48px;
+        }
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+        .btn-secondary {
+            background: var(--glass);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* MOCKUP */
+        .mockup {
+            margin-top: 80px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+        }
+        .mockup img { width: 100%; display: block; }
+
+        /* STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin: 100px 0;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 32px;
+            border-radius: 16px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+        .card h3 { font-size: 24px; margin-bottom: 16px; }
+        .card p { color: var(--text-dim); font-size: 16px; }
+        .card .stat {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 32px;
+            color: var(--red);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* HOW IT WORKS */
+        .how-it-works { margin: 100px 0; }
+        .section-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 800;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+        }
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
+        .step { position: relative; }
+        .step-number {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+        .step h4 { font-size: 20px; margin-bottom: 12px; }
+        .step p { color: var(--text-dim); }
+
+        /* COMPARISON */
+        .comparison { margin: 100px 0; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            padding: 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        tr:hover td { background: var(--glass); }
+        .feature-name { font-weight: 600; }
+        .legacy { color: var(--text-dim); }
+        .xoras { color: var(--accent); font-weight: 600; }
+
+        /* FOOTER CTA */
+        .footer-cta {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            padding: 80px;
+            text-align: center;
+            border-radius: 24px;
+            margin-bottom: 100px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .footer-cta::before {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: 0;
+        }
+        .footer-cta > * { position: relative; z-index: 1; }
+        .footer-cta h2 { font-size: 48px; margin-bottom: 24px; letter-spacing: -2px; }
+
+        /* INSTALL BLOCK */
+        .install-block {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .install-block code {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--accent);
+            font-size: 16px;
+        }
+        .install-block span { color: var(--text-dim); font-size: 12px; }
+
+        /* FOOTER */
+        .footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .footer p { color: var(--text-dim); font-size: 14px; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--text); }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero > * {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        .hero .badge { animation-delay: 0.1s; }
+        .hero h1 { animation-delay: 0.2s; }
+        .hero p { animation-delay: 0.3s; }
+        .hero .cta-group { animation-delay: 0.4s; }
+        .hero .mockup { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-logo">XORAS</div>
+    <div class="nav-links">
+        <a href="#how">How It Works</a>
+        <a href="#compare">Compare</a>
+        <a href="https://github.com/aoxendine3/xoras-sentry">GitHub</a>
+        <a href="https://aoxendine.gumroad.com/l/xoras-sentry" class="btn btn-primary" style="padding: 10px 20px; font-size: 14px;">Get Sentry</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="badge">V1.2.2 // INSTITUTIONAL RELEASE</div>
+        <h1>The Market Will Audit<br>Your Secrets.</h1>
+        <p>XORAS Sentry audits your code first. Local-first, AST-powered security for the sovereign software engineer.</p>
+        <div class="cta-group">
+            <a href="https://aoxendine.gumroad.com/l/xoras-sentry" class="btn btn-primary">Get XORAS Sentry</a>
+            <a href="https://github.com/aoxendine3/xoras-sentry" class="btn btn-secondary">View Repository</a>
+        </div>
+        <div class="mockup">
+            <img src="/mockup.png" alt="XORAS Sentry CLI audit output showing real-time secret detection">
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-grid">
+        <div class="card">
+            <div class="stat">$4.4M</div>
+            <h3>Average Breach Cost</h3>
+            <p>94% of leaks are due to "structural blindness" in legacy tools. One missed template literal is all it takes.</p>
+        </div>
+        <div class="card">
+            <div class="stat">12 MIN</div>
+            <h3>Time to Leak</h3>
+            <p>From commit to indexed scraper. Scrapers don't care about your privacy; XORAS does.</p>
+        </div>
+        <div class="card">
+            <div class="stat">100%</div>
+            <h3>Local-First</h3>
+            <p>Your source code never leaves your machine. No accounts. No telemetry. Zero cloud dependency.</p>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works" id="how">
+        <div class="section-label">Protocol</div>
+        <h2 class="section-title">Three Steps to Institutional Integrity</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">01 // INSTALL</div>
+                <h4>One Command Deploy</h4>
+                <p>No account. No data upload. Run <code style="color: var(--accent); font-family: 'IBM Plex Mono', monospace;">npx xoras-sentry .</code> in any project directory.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">02 // SCAN</div>
+                <h4>AST-Deep Analysis</h4>
+                <p>The engine parses your code's abstract syntax tree—not regex patterns—to find secrets even inside template literals and dynamic expressions.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">03 // REPORT</div>
+                <h4>Institutional Audit Report</h4>
+                <p>Get a structured, machine-readable report with file, line, and severity for every finding. Export HTML or pipe to CI.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPARISON TABLE -->
+    <section class="comparison" id="compare">
+        <div class="section-label">Analysis</div>
+        <h2 class="section-title">XORAS vs. Legacy Tools</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Legacy Regex Scanners</th>
+                    <th>XORAS SENTRY</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="feature-name">Logic Awareness</td>
+                    <td class="legacy">No — Blind to context</td>
+                    <td class="xoras">✓ AST-Deep Parsing</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Cloud Dependency</td>
+                    <td class="legacy">High — Data upload required</td>
+                    <td class="xoras">✓ Zero — Fully Local</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Hallucination Detection</td>
+                    <td class="legacy">None</td>
+                    <td class="xoras">✓ Schema-Based</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Audit Speed</td>
+                    <td class="legacy">Linear scan</td>
+                    <td class="xoras">✓ 6x Faster (Parallelized)</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">CI/CD Integration</td>
+                    <td class="legacy">Manual setup</td>
+                    <td class="xoras">✓ GitHub Action included</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Idempotent Events</td>
+                    <td class="legacy">None</td>
+                    <td class="xoras">✓ Tamper-evident ledger</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- FOOTER CTA -->
+    <div class="footer-cta">
+        <div class="badge">READY FOR FINALITY</div>
+        <h2>Audit Before the<br>Market Does.</h2>
+        <p style="color: var(--text-dim); margin-bottom: 32px; font-size: 18px;">One command. Zero cloud. Institutional integrity.</p>
+        <div class="cta-group">
+            <a href="https://aoxendine.gumroad.com/l/xoras-sentry" class="btn btn-primary">Get Institutional Access</a>
+        </div>
+        <div class="install-block">
+            <code>npx xoras-sentry .</code>
+            <span>No install required</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 XORAS Institutional Core. BSL-1.1 License.</p>
+        <div class="footer-links">
+            <a href="https://github.com/aoxendine3/xoras-sentry">GitHub</a>
+            <a href="https://aoxendine.gumroad.com/l/xoras-sentry">Purchase</a>
+            <a href="https://github.com/aoxendine3/xoras-sentry/blob/main/SECURITY.md">Security</a>
+        </div>
+    </footer>
+
+</div>
+
+</body>
+</html>
