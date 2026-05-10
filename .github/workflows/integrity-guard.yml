@@ -1,4 +1,4 @@
-name: Security Integrity Guard
+name: XORAS Sentry Guard
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Run Integrity Sentry
+      - name: Run XORAS Sentry Guard
         uses: ./ 
         with:
           target_path: '.'
