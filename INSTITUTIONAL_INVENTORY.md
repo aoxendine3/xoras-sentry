@@ -7,7 +7,7 @@ The following items have been verified through real terminal output, successful 
 
 *   **Core Scanning Engine**: `packages/core` - AST-based auditing verified via test suite. **[VERIFIED]**
 *   **CLI Distribution**: `npx xoras-sentry` - Confirmed working from fresh install. **[VERIFIED]**
-*   **Handshake Logic**: `packages/integrations/payments/stripe.cjs` - Verifiable signature logic on disk. **[VERIFIED]**
+*   **Handshake Logic**: `packages/integrations/payments/stripe.cjs` - Verifiable signature logic on disk, webhook route active. **[VERIFIED]**
 *   **Licensing**: BSL-1.1 - Canonical license files verified in repository. **[VERIFIED]**
 *   **Vanguard Assets**: C# scripts verified for presence and lack of hardcoded secrets. **[VERIFIED]**
 

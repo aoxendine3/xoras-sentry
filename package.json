@@ -14,5 +14,9 @@
     "ui": "npm run start --workspace=packages/ui"
   },
   "author": "Anthony Oxendine",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "stripe": "^22.1.1"
+  }
 }
