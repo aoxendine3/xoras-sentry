@@ -1,4 +1,4 @@
-# XORAS SENTRY // [v1.2.0]
+# XORAS SENTRY // [v1.2.2]
 
 ### Sovereign, Local-First Secret Auditing for JS/TS
 *Zero cloud. No account required. Schema-based precision.*
@@ -73,3 +73,4 @@ npx xoras-sentry . --html
 ---
 **Standardized. Verified. Operational.**
 *XORAS SENTRY — Local-first security.*
+[Canonical Repository: aoxendine3/xoras-sentry](https://github.com/aoxendine3/xoras-sentry)

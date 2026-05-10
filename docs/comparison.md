@@ -24,3 +24,4 @@ Standard scanners look for patterns that "look like" keys. XORAS cross-reference
 ---
 **Standardized. Verified. Operational.**
 *XORAS SENTRY — Sovereignty in Security.*
+[Canonical Repository: aoxendine3/xoras-sentry](https://github.com/aoxendine3/xoras-sentry)
