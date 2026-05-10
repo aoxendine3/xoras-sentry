@@ -7,10 +7,16 @@ import { z } from 'zod';
  * Standardized context and middleware for institutional security.
  */
 
-interface Context {
-  user?: { id: string; role: 'ADMIN' | 'USER' };
-  ledger?: any;
+export async function createTRPCContext(opts: { req: Request }) {
+  const userId = opts.req.headers.get('x-user-id');
+  const role = opts.req.headers.get('x-user-role') as 'ADMIN' | 'USER' | null;
+
+  return {
+    user: userId ? { id: userId, role: role || 'USER' } : null,
+  };
 }
+
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
