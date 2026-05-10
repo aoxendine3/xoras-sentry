@@ -14,11 +14,5 @@
     "ui": "npm run start --workspace=packages/ui"
   },
   "author": "Anthony Oxendine",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^25.6.2",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
-  }
+  "license": "MIT"
 }

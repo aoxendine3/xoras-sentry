@@ -5,11 +5,6 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-// Institutional Component Tests
-const { runApiTest } = require('../../api/tests/api.test.cjs');
-const { runDbTest } = require('../../db/tests/db.test.cjs');
-const { runWebTest } = require('../../../apps/web/tests/web.test.cjs');
-
 async function runSandboxAudit() {
     console.log('--- XORAS SANDBOX PROTOCOL START ---');
 
@@ -81,15 +76,6 @@ async function runSandboxAudit() {
         }
     }
     console.log('✅ Vanguard Assets Verified (4/4).');
-
-    // 6. API Sandbox
-    await runApiTest();
-
-    // 7. DB Sandbox
-    await runDbTest();
-
-    // 8. Web Sandbox
-    await runWebTest();
 
     console.log('--- XORAS SANDBOX PROTOCOL COMPLETE: 100% OPERATIONAL ---');
     

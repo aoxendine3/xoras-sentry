@@ -1,40 +1,36 @@
-# XORAS // INSTITUTIONAL HUB [v1.2.2]
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-### High-Fidelity Next.js 15 Dashboard
-*Performant. Secure. Institutional.*
+## Getting Started
 
-`apps/web` is the primary interface for the XORAS Sentry ecosystem. Built on **Next.js 15** and **React 19**, it provides a real-time monitor for auditing metrics, manifest generation, and institutional security management.
+First, run the development server:
 
----
-
-## 🚀 Quickstart
-
-### 1. Local Development
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-### 2. Edge Preview
-The application is optimized for the **Cloudflare Edge Runtime**. Export the `edge` runtime in your routes to achieve sub-50ms latency.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
----
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 🛡️ Frontend Security
-- **Edge Middleware**: JWT-based auth and rate limiting enforced at the Point of Presence (PoP).
-- **Tailwind 4.0**: Premium, utility-first styling for high-trust institutional aesthetics.
-- **Server Actions**: Leveraging React 19 for secure, type-safe data mutations.
-- **Content Security Policy**: Hardened CSP headers injected via middleware.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-## 🛠️ Page Reference
+To learn more about Next.js, take a look at the following resources:
 
-| Route | Description | Runtime |
-| :--- | :--- | :--- |
-| `/` | Institutional Landing Page & Hero Metrics. | Edge |
-| `/dashboard` | Real-time Sentry audit stream. | Edge |
-| `/login` | Secure institutional credential gateway. | Node.js |
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
----
-**Standardized. Verified. Operational.**
-*XORAS HUB — The face of sovereign security.*
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
