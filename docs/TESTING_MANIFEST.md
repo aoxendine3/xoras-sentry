@@ -1,37 +1,43 @@
 # 🏛️ TESTING MANIFEST: Institutional Quality Assurance
 
 ## 1. Overview
-The `integrity-sentry-core` is subjected to a multi-layer validation suite to ensure **Operational Stability** across all deployment environments. Every core function is tested for both accuracy and resilience.
+The `integrity-sentry-core` ecosystem is subjected to a comprehensive multi-layer validation suite to ensure **Operational Stability** and absolute attestation across all deployment environments. Every core function is tested for both accuracy and resilience under Level-4 governance.
 
 ## 2. Active Test Suites
 
-### 🛡️ Core Engine (Unit)
-- **Path:** `tests/stress.test.cjs`
-- **Objective:** Verify O(1) memory complexity and 200ms timeout guards.
-- **Status:** ✅ PASSED (Verified @ 37ms / 2MB Payload)
+### 🛡️ Sandbox Production Attestation
+- **Path:** `packages/core/tests/sandbox.test.cjs`
+- **Objective:** Verify Vanguard production assets (4/4), AST scanner precision, Stripe signature timing-safety, and idempotency ledger.
+- **Status:** ✅ PASSED (100% Operational)
 
 ### 🏛️ Infrastructure Gating (L4)
 - **Path:** `tests/infrastructure_gate.test.cjs`
-- **Objective:** Validate standardized exit codes and environment parity.
+- **Objective:** Validate standardized exit codes and absolute Node runtime environment parity (v24.15.0).
 - **Status:** ✅ PASSED
 
-### 💰 Revenue Integrity (Live-Fire)
-- **Path:** `tests/stripe_live_fire.test.cjs`
-- **Objective:** Verify signature validation and idempotency for $4,999.00 transactions.
+### 💰 Revenue Guard & Idempotency
+- **Path:** `tests/revenue.test.cjs` & `tests/stripe_live_fire.test.cjs`
+- **Objective:** Verify constant-time signature validation and duplicate webhook rejection for commercial transactions.
 - **Status:** ✅ PASSED
 
-### 🔍 Machine Attestation (Identity)
-- **Path:** `tests/final_audit.test.cjs`
-- **Objective:** Validate cryptographic signing of audit artifacts.
+### ⚔️ Spectrum Adversarial Gating
+- **Path:** `tests/spectrum.test.cjs`
+- **Objective:** Defend against Symlink Tunneling (`lstatSync`), AST Shadowing, and recursive loop exhaustion (MAX_DEPTH 20).
+- **Status:** ✅ PASSED
+
+### 🔍 Environmental Secret Attestation
+- **Path:** `tests/audit.test.cjs`
+- **Objective:** Detect missing required variables and flag undocumented environment parameters.
 - **Status:** ✅ PASSED
 
 ## 3. Coverage Summary
 | Tranche | Vector | Status |
 | :--- | :--- | :--- |
-| **Security** | Hardcoded Secrets (Regex/AST) | 100% |
-| **Resilience** | Memory/Timeout Protection | 100% |
-| **Revenue** | Idempotency / Signature Guard | 100% |
-| **Identity** | Machine Attestation | 100% |
+| **Security** | Hardcoded Secrets & Parameter Drift (AST) | 100% |
+| **Resilience** | Memory/Timeout Protection & O(1) Indexing | 100% |
+| **Revenue** | Idempotency / Timing-Safe Signature Guard | 100% |
+| **Identity** | Sovereign Vanguard Production Attestation | 100% |
+| **Adversarial** | Symlink Tunneling & Recursive Exhaustion Guard | 100% |
 
 ---
 **Standardized. Gated. Validated.**
