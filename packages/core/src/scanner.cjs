@@ -3,7 +3,7 @@ const path = require('path');
 const os = require('os');
 const acorn = require('acorn');
 const walk = require('acorn-walk');
-const { getIgnoreList, loadConfig, getSecretPatterns } = require('./policy.cjs');
+const { getIgnoreList, loadConfig, getSecretPatterns, auditSovereignZone } = require('./policy.cjs');
 const { auditEntropy } = require('./entropy.cjs');
 const { scanMalware } = require('./malware.cjs');
 const { getTrace } = require('./tracer.cjs');
@@ -167,6 +167,17 @@ async function scanSource(dir, vars = new Map(), hardcodedSecrets = [], depth = 
             deepAudit(content, vars, hardcodedSecrets, relativePath, patterns);
             auditEntropy(content, relativePath, hardcodedSecrets);
             scanMalware(content, relativePath, hardcodedSecrets);
+            
+            const sovereignViolations = auditSovereignZone(content, relativePath);
+            for (let j = 0; j < sovereignViolations.length; j++) {
+                const v = sovereignViolations[j];
+                hardcodedSecrets.push({
+                    file: v.file,
+                    type: 'SOVEREIGNTY_VIOLATION',
+                    line: 1,
+                    trace: `Required: ${v.requiredZone} // Found: ${v.violation}`
+                });
+            }
         }
     }
 

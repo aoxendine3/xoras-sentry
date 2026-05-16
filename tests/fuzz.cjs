@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { scanSource } = require('../lib/core/scanner.cjs');
+const { scanSource } = require('../packages/core/src/scanner.cjs');
 
 const fuzzDir = path.join(__dirname, 'fuzz-sandbox');
 if (!fs.existsSync(fuzzDir)) fs.mkdirSync(fuzzDir);
@@ -34,6 +34,7 @@ async function runFuzzAudit() {
         process.exit(1);
     } finally {
         // Cleanup
+        if (fs.existsSync(fuzzDir)) fs.rmSync(fuzzDir, { recursive: true, force: true });
         console.log('🏛️  FUZZING COMPLETE.');
     }
 }

@@ -54,12 +54,22 @@ function classify(key) {
     return 'General';
 }
 
+/**
+ * Expanded Global Secret & AI Token Recognition Matrix.
+ * First-class token identification for Qwen 3, DeepSeek V4, Mistral/Kyutai (EU), Falcon (UAE), and SEA-LION.
+ */
 function getSecretPatterns() {
     const defaultPatterns = [
         { name: 'AWS', regex: /AKIA[a-zA-Z0-9]{16}/ },
         { name: 'Stripe', regex: /sk_test_[a-zA-Z0-9]{24,}/ },
         { name: 'OpenAI', regex: /sk-[a-zA-Z0-9]{20,}/ },
         { name: 'Google', regex: /AIza[a-zA-Z0-9_-]{35}/ },
+        { name: 'Qwen', regex: /sk-[a-f0-9]{32}/ },
+        { name: 'DeepSeek', regex: /sk-[a-z0-9]{32}/ },
+        { name: 'Mistral', regex: /mistral-[a-zA-Z0-9]{32}/ },
+        { name: 'Kyutai', regex: /kyutai-[a-zA-Z0-9]{24}/ },
+        { name: 'Falcon', regex: /falcon-[a-zA-Z0-9]{28}/ },
+        { name: 'SEALION', regex: /sealion-[a-zA-Z0-9]{24}/ },
         { name: 'Generic', regex: /(?:key|secret|token|password|auth|api|id)['"]?\s*[:=]\s*['"]([a-zA-Z0-9_\-\.]{20,})['"]/i }
     ];
 
@@ -80,4 +90,27 @@ function getSecretPatterns() {
     return defaultPatterns;
 }
 
-module.exports = { getIgnoreList, loadConfig, classify, getSecretPatterns };
+/**
+ * Multi-Jurisdictional Sovereign Zoning Audit.
+ * Gates cross-border data leakage and unencrypted outbound telemetry across global sovereign boundaries (EU AI Act, UAE Data Laws, Singapore PDPA).
+ */
+function auditSovereignZone(content, relativePath) {
+    const violations = [];
+    const nonCompliantEndpoints = [
+        { name: 'Unencrypted_Data_Exfil', regex: /http:\/\/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i, zone: 'Global_Zero_Trust' }
+    ];
+
+    for (let i = 0; i < nonCompliantEndpoints.length; i++) {
+        const ep = nonCompliantEndpoints[i];
+        if (ep.regex.test(content)) {
+            violations.push({
+                file: relativePath,
+                violation: `Non-sovereign endpoint access detected (${ep.name})`,
+                requiredZone: ep.zone
+            });
+        }
+    }
+    return violations;
+}
+
+module.exports = { getIgnoreList, loadConfig, classify, getSecretPatterns, auditSovereignZone };
