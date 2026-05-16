@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { scanSource } = require('../lib/core/scanner.cjs');
+const { scanSource } = require('../packages/core/src/scanner.cjs');
 
 const spectrumDir = path.join(__dirname, 'spectrum-sandbox');
 if (!fs.existsSync(spectrumDir)) fs.mkdirSync(spectrumDir);

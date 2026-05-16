@@ -1,8 +1,8 @@
-const { processStripeEvent } = require('../lib/integrations/stripe.cjs');
+const { processStripeEvent } = require('../packages/integrations/payments/stripe.cjs');
 const fs = require('fs');
 const path = require('path');
 
-const LEDGER_PATH = path.join(process.cwd(), '.integrity_ledger.json');
+const LEDGER_PATH = path.join(process.cwd(), '.xoras_ledger.json');
 
 async function testRevenueIntegrity() {
     console.log('🚀 Starting Revenue Integrity Audit...');

@@ -1,4 +1,4 @@
-const { processStripeEvent, verifyStripeSignature } = require('../lib/integrations/stripe.cjs');
+const { processStripeEvent, verifyStripeSignature } = require('../packages/integrations/payments/stripe.cjs');
 const crypto = require('crypto');
 
 async function runStripeLiveFire() {

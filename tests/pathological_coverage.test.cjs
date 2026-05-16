@@ -2,7 +2,7 @@ const assert = require('node:assert');
 const test = require('node:test');
 const fs = require('fs');
 const path = require('path');
-const { scanSource } = require('../lib/core/scanner.cjs');
+const { scanSource } = require('../packages/core/src/scanner.cjs');
 
 const TEST_DIR = path.resolve('./tests/sandbox_stress');
 

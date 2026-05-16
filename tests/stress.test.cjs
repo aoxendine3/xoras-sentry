@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { scanSource } = require('../lib/core/scanner.cjs');
+const { scanSource } = require('../packages/core/src/scanner.cjs');
 
 const stressDir = path.join(__dirname, 'stress-targets');
 if (!fs.existsSync(stressDir)) fs.mkdirSync(stressDir);

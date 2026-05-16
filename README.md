@@ -1,76 +1,54 @@
-# XORAS SENTRY // [v1.2.2]
+# 🏛️ integrity-sentry-core // Obsidian Gold Command Center
+*The Relational UI & Visual Oversight Dashboard for XORAS Level-4 Pre-Commit Sentries.*
 
-### Sovereign, Local-First Secret Auditing for JS/TS
-*Zero cloud. No account required. Schema-based precision.*
+[![UI Dashboard](https://img.shields.io/badge/Command%20Center-Obsidian%20Gold-ffd700?style=flat-square)](https://github.com/aoxendine3/integrity-sentry-core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Relational Memory](https://img.shields.io/badge/Memory-SQLite%20B--Tree-00ffcc?style=flat-square)](aether_brain.sqlite)
 
-`xoras-sentry` is a professional-grade structural auditor built for developers who refuse to send their source code to the cloud for security checks. While standard scanners rely on pattern matching, XORAS combines deep AST analysis with **Schema-Based Hallucination Detection** to catch configuration drift and hidden leaks before they leave your machine.
+`integrity-sentry-core` houses the premium Obsidian Gold visual interface and relational telemetry interlink for the XORAS enterprise. It connects directly to your local air-gapped SQLite B-Tree ledger (`aether_brain.sqlite`) to provide instant executive oversight across all staged outbound DevRel accounts and pre-commit security audits.
+
+```bash
+# Launch the Obsidian Gold Command Center locally
+npm run dev
+```
 
 ---
 
-## 🚀 Quickstart
+## ⚡ Core Interface Features
 
-### 1. Instant Audit
-Scan your project for hardcoded secrets and environment hallucinations:
+### 1. Relational Telemetry Synchronization
+Pulls live pipeline aggregates (Staged Leads, Active PR Submissions in Review, Won Deals) in real-time from `aether_brain.sqlite` without uploading a single byte to external cloud servers.
+
+### 2. Glassmorphism Visual Architecture
+Engineered with premium dark-mode styling (`--bg-base: #07070a`), gold accent glowing borders (`#ffd700`), and interactive terminal execution logs that give you complete transparency into daemon activity.
+
+### 3. AST Secret Hallucination Guard
+Visualizes deep AST traces and unmapped `process.env` references identified during pre-commit scans across your local development grid.
+
+---
+
+## 💼 Commercial Enterprise Pilot ($2,000 Level-4 Sentry)
+We deploy custom, high-throughput pre-commit and post-build sentries tailored to your enterprise infrastructure.
+
+**⚡ Open-Source Maintainer & Early Adopter Incentive:**
+If your team actively maintains open-source infrastructure or is onboarding to our Level-4 sentry suite, we waive our $500 setup fee and offer a **50% discount on your first quarter pilot** ($1,000 total).
+
+📧 **Direct Contact**: [Connect with Anthony via LinkedIn / Email](mailto:aoxendine3@gmail.com) | [XORAS Institutional Portal](https://aoxendine3.github.io/)
+
+---
+
+## 🛠️ CLI Execution Commands
+
 ```bash
+# Standard AST structural secret audit
 npx xoras-sentry .
-```
 
-### 2. Pro Mode: Delta Scan
-Scan only modified files in the current branch (6x faster on mid-size repos):
-```bash
+# Generate an interactive HTML report
+npx xoras-sentry . --html
+
+# Fast Mode: Scan only modified delta files in git branch
 npx xoras-sentry . --delta
 ```
 
-### 3. Visual Reports
-Generate a professional, transparent HTML audit report:
-```bash
-npx xoras-sentry . --html
-```
-
 ---
-
-## 🛡️ Innovative Features
-- **Hallucination Guard**: Automated cross-referencing of `process.env` calls against a ground-truth schema to detect undocumented configuration drift.
-- **AST Tracer**: A transparency layer providing the exact Abstract Syntax Tree path and source context for every detection.
-- **Proprietary Pattern Engine**: Dynamic institutional secret detection via customizable regex loading.
-
----
-
-## 📚 Documentation
-- [Technical Specification](docs/TECHNICAL_SPEC.md)
-- [Operational Guide](docs/OPERATIONAL_GUIDE.md)
-- [Integrity Manifesto](docs/INTEGRITY_MANIFESTO.md)
-- Licenses: [MIT (Core)](packages/core/LICENSE) | [BSL 1.1 (Integrations/UI)](packages/integrations/LICENSE)
-
----
-
-## 💎 Tiers & Licensing
-
-## 🏆 Founding Users
-*Special thanks to the early-access partners helping steer the XORAS roadmap.*
-- (10 Spots Available - Join the Founding Tier)
-
----
-
-| Tier | Features | Price |
-| :--- | :--- | :--- |
-| **Open Source** | CLI, AST Scans, Local Reports | **Free** |
-| **Indie Bundle** | CLI Wrapper, Rule Builder, Pre-commit Hook | **$49 (One-time)** |
-| **Team Pro** | CI/CD Integration, GHA Template, Dashboard UI | **$9/mo** or **$79/yr** |
-
----
-
-## 🛠️ Command Reference
-
-| Command | Description |
-| :--- | :--- |
-| `npx xoras-sentry .` | Standard structural audit. |
-| `npx xoras-sentry . --html` | Generate interactive HTML report. |
-| `npx xoras-sentry --delta` | Scan changed files (Fast Mode). |
-| `npx xoras-sentry --sign` | Generate a verifiable audit report. |
-| `npx xoras-sentry --history` | (Pro) Deep git history audit. |
-
----
-**Standardized. Verified. Operational.**
-*XORAS SENTRY — Local-first security.*
-[Canonical Repository: aoxendine3/xoras-sentry](https://github.com/aoxendine3/xoras-sentry)
+*Secured by XORAS C-Vector Core. All telemetry verified.*

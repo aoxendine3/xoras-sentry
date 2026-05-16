@@ -11,3 +11,7 @@ yarn-error.log*
 .idea/
 .vscode/
 .xoras_ledger.json
+*.db
+*.sqlite
+*.jws
+scratch/

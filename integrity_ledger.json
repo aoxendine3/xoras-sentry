@@ -1,0 +1,17 @@
+{
+  "history": [
+    {
+      "timestamp": "2026-05-11T21:22:38.219Z",
+      "status": "TRIAL_ACTIVE",
+      "expiry": "2026-05-25T21:22:38.219Z",
+      "metrics": {
+        "latency": 0.0188,
+        "security_findings": 0,
+        "dependency_count": 2,
+        "timestamp": "2026-05-11T21:22:38.218Z"
+      }
+    }
+  ],
+  "audit_log": [],
+  "signature": "a96b48b93becc62c9a82b4e5ab5da220cd4ccb896c1cba98a5bab18ff57dd35f"
+}

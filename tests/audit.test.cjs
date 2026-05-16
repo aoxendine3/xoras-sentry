@@ -2,8 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
-const { scanSource } = require('../lib/core/scanner.cjs');
-const { audit } = require('../lib/core/verifier.cjs');
+const { scanSource } = require('../packages/core/src/scanner.cjs');
+const { audit } = require('../packages/core/src/verifier.cjs');
 
 test('Env-Integrity-Sentry Audit Logic', async (t) => {
     const testDir = path.join(__dirname, 'temp_test_project');

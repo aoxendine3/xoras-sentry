@@ -1,4 +1,4 @@
-const { scanSource } = require('../lib/core/scanner.cjs');
+const { scanSource } = require('../packages/core/src/scanner.cjs');
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
