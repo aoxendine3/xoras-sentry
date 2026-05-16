@@ -8,7 +8,7 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "npm test --workspaces",
+    "test": "node packages/core/tests/sandbox.test.cjs && node tests/audit.test.cjs && node tests/infrastructure_gate.test.cjs && node tests/revenue.test.cjs && node tests/spectrum.test.cjs",
     "audit": "npm run audit --workspace=packages/cli",
     "clean": "npm run audit --workspace=packages/cli -- --janitor",
     "ui": "npm run start --workspace=packages/ui"
