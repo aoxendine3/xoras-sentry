@@ -12,6 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install XORAS Sentry CLI
+        run: npm install -g integrity-sentry-core
+
       - name: Run XORAS Sentry Guard
         uses: ./ 
         with:
