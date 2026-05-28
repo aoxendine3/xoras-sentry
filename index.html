@@ -3,379 +3,788 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XORAS // COMMAND CENTER [v3.5.0]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>XORAS Sentry // Institutional Code Integrity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #060609;
-            --bg-surface: #0e0e15;
-            --bg-panel: rgba(20, 20, 30, 0.7);
-            --gold-primary: #ffd700;
-            --gold-glow: rgba(255, 215, 0, 0.35);
-            --neon-cyan: #00ffcc;
-            --neon-cyan-glow: rgba(0, 255, 204, 0.3);
-            --crimson-alert: #ff3b30;
-            --text-main: #f0f0f5;
-            --text-muted: #8e8e9f;
-            --border-color: rgba(255, 215, 0, 0.2);
-            --card-radius: 16px;
+            --bg: #070514; /* Deep Royal Indigo Midnight */
+            --surface: #0f0d24; /* Vibrant Ultraviolet Slate */
+            --border: #231f47; /* Rich Deep Lavender Border */
+            --text: #ffffff;
+            --text-dim: #a49ebd; /* Soft Violet-Grey Text */
+            --accent: #00f2ff; /* Neon Electric Cyan */
+            --accent-glow: rgba(0, 242, 255, 0.4);
+            --red: #ff3b30;
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.12);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background-color: var(--bg-base); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
-            line-height: 1.6; 
-            overflow-x: hidden; 
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Ambient Background Gradients */
-        .ambient-glow { position: fixed; width: 700px; height: 700px; border-radius: 50%; filter: blur(150px); z-index: 0; pointer-events: none; opacity: 0.15; }
-        .glow-1 { top: -200px; left: -200px; background: radial-gradient(circle, var(--gold-primary), transparent 70%); }
-        .glow-2 { bottom: -200px; right: -200px; background: radial-gradient(circle, var(--neon-cyan), transparent 70%); }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, rgba(0, 242, 255, 0.07) 0%, transparent 60%),
+                              radial-gradient(circle at bottom left, rgba(255, 0, 127, 0.05) 0%, transparent 70%);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-        /* Master Shell */
-        .app-shell {
-            display: grid;
-            grid-template-columns: 280px 1fr 340px;
-            grid-template-rows: 80px 1fr;
-            height: 100vh;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0 80px;
+            text-align: center;
             position: relative;
-            z-index: 1;
-            background: linear-gradient(rgba(14,14,21,0.5), rgba(6,6,9,0.8));
-            backdrop-filter: blur(40px);
         }
 
-        @media (max-width: 1200px) {
-            .app-shell { grid-template-columns: 260px 1fr; }
-            .sidebar-right { display: none; }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: -1;
+            opacity: 0.5;
         }
 
-        /* Header / Navigation bar */
-        header {
-            grid-column: 1 / -1;
+        .badge {
+            display: inline-block;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 72px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 0.95;
+            margin-bottom: 32px;
+            background: linear-gradient(180deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 48px;
+        }
+
+        .cta-group {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 32px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            background: rgba(14, 14, 21, 0.8);
-            backdrop-filter: blur(20px);
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .brand-cluster { display: flex; align-items: center; gap: 16px; }
-        .logo-glyph { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 900; color: var(--gold-primary); text-shadow: 0 0 25px var(--gold-glow); letter-spacing: -1.5px; }
-        .badge-live { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: rgba(0, 255, 204, 0.1); color: var(--neon-cyan); padding: 6px 14px; border-radius: 20px; border: 1px solid var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan-glow); }
-        .pulse-dot { width: 8px; height: 8px; background-color: var(--neon-cyan); border-radius: 50%; box-shadow: 0 0 10px var(--neon-cyan); animation: pulse 1.5s infinite; }
-
-        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.3); } 100% { opacity: 1; transform: scale(1); } }
-
-        .system-time { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 12px; }
-
-        /* Left Navigation Sidebar */
-        .sidebar-left {
-            background: rgba(14, 14, 21, 0.6);
-            border-right: 1px solid rgba(255,255,255,0.08);
-            padding: 32px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-            overflow-y: auto;
+        .btn {
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
 
-        .nav-group { display: flex; flex-direction: column; gap: 8px; }
-        .nav-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; padding-left: 12px; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 0.95rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s; cursor: pointer; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); transform: translateX(4px); }
-        .nav-item.active { background: rgba(255, 215, 0, 0.1); color: var(--gold-primary); border-left: 3px solid var(--gold-primary); box-shadow: 0 0 20px rgba(255, 215, 0, 0.15); }
-        
-        .status-box { margin-top: auto; padding: 20px; background: rgba(255, 59, 48, 0.05); border: 1px solid rgba(255, 59, 48, 0.2); border-radius: 12px; }
-        .status-box.secure { background: rgba(0, 255, 204, 0.05); border-color: rgba(0, 255, 204, 0.3); }
-        .status-box h4 { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--neon-cyan); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
-        .status-box p { font-size: 0.8rem; color: var(--text-muted); }
-
-        /* Main Workspace Content */
-        .workspace {
-            padding: 40px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
-        .view-title { font-size: 2rem; font-weight: 800; letter-spacing: -1px; display: flex; align-items: center; justify-content: space-between; }
-        .btn-action { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; background: var(--gold-primary); color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; box-shadow: 0 0 20px var(--gold-glow); transition: all 0.2s; }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--gold-primary); background: #fff; }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
 
-        /* B-Tree Relational Metrics Grid */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
-        .metric-card { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 32px; border-radius: var(--card-radius); backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-top: 3px solid var(--gold-primary); transition: all 0.2s; position: relative; overflow: hidden; }
-        .metric-card:hover { transform: translateY(-4px); border-color: var(--gold-primary); box-shadow: 0 15px 40px var(--gold-glow); }
-        .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 3.2rem; font-weight: 900; color: var(--gold-primary); line-height: 1; margin-bottom: 12px; }
-        .metric-title { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
-        .metric-desc { font-size: 0.85rem; color: var(--text-muted); }
+        .btn-secondary {
+            background: var(--glass);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+        }
 
-        /* Relational SQLite Ledger View */
-        .table-panel { background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--card-radius); overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(20px); }
-        .panel-header { padding: 24px 32px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
-        .panel-header h3 { font-size: 1.25rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: #fff; }
-        
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
-        th { padding: 18px 32px; background: rgba(0,0,0,0.3); color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        td { padding: 20px 32px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-main); vertical-align: middle; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
-        
-        .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
-        .badge-won { background: rgba(255, 215, 0, 0.15); color: var(--gold-primary); border: 1px solid var(--gold-primary); box-shadow: 0 0 10px var(--gold-glow); }
-        .badge-sub { background: rgba(0, 255, 204, 0.1); color: var(--neon-cyan); border: 1px solid var(--neon-cyan); }
-        .badge-staged { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
 
-        /* Right Sidebar / Interactive Live Console */
-        .sidebar-right {
-            background: rgba(10, 10, 16, 0.8);
-            border-left: 1px solid rgba(255,255,255,0.08);
-            padding: 32px 24px;
-            display: flex;
-            flex-direction: column;
+        /* Mockup / Image Section */
+        .mockup {
+            margin-top: 80px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .mockup img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Grid Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
+            margin: 100px 0;
         }
 
-        .console-header { display: flex; align-items: center; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 16px; }
-        .console-window { flex-grow: 1; background: #040406; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.7; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
-        
-        .log-entry { display: flex; gap: 12px; }
-        .log-time { color: var(--text-muted); }
-        .log-msg { color: var(--neon-cyan); }
-        .log-msg.gold { color: var(--gold-primary); font-weight: 700; }
-        .log-msg.crit { color: #ff5f56; }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 32px;
+            border-radius: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+        }
+
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card p {
+            color: var(--text-dim);
+            font-size: 16px;
+        }
+
+        .card .stat {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 32px;
+            color: var(--red);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* Comparison Table */
+        .comparison {
+            margin: 100px 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--glass);
+            border-radius: 16px;
+        }
+
+        th, td {
+            padding: 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .feature-name { font-weight: 600; }
+        .legacy { color: var(--text-dim); }
+        .xoras { color: var(--accent); font-weight: 600; }
+
+        /* Footer CTA */
+        .footer-cta {
+            background: linear-gradient(45deg, #0a0a0a, #1a1a1a);
+            padding: 80px 0;
+            text-align: center;
+            border-radius: 24px;
+            margin-bottom: 100px;
+            border: 1px solid var(--border);
+        }
+
+        .footer-cta h2 {
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+
+        .footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero > * {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .hero .badge { animation-delay: 0.1s; }
+        .hero h1 { animation-delay: 0.2s; }
+        .hero p { animation-delay: 0.3s; }
+        .hero .cta-group { animation-delay: 0.4s; }
+
+        /* Pricing Grid CSS */
+        .pricing-section {
+            margin: 100px 0;
+            text-align: center;
+        }
+        .pricing-section h2 {
+            font-size: 40px;
+            margin-bottom: 48px;
+            background: linear-gradient(180deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+        }
+        .pricing-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 48px 32px;
+            border-radius: 20px;
+            text-align: left;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .pricing-card.premium {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+        .pricing-card h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .pricing-card .desc {
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+        .pricing-card .price {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text);
+            margin: 24px 0;
+        }
+        .pricing-card .price span {
+            font-size: 16px;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        .pricing-card ul {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+        .pricing-card ul li {
+            font-size: 15px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pricing-card ul li::before {
+            content: "✓";
+            color: var(--accent);
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
-    <div class="ambient-glow glow-1"></div>
-    <div class="ambient-glow glow-2"></div>
 
-    <div class="app-shell">
-        <!-- Navigation Header -->
-        <header>
-            <div class="brand-cluster">
-                <div class="logo-glyph">XORAS // COMMAND</div>
-                <div class="badge-live"><div class="pulse-dot"></div>OBSIDIAN GOLD CORE</div>
-            </div>
-            <div class="system-time">
-                <span>MEM_VAULT: aether_brain.sqlite</span> |
-                <span id="clock">00:00:00 UTC</span>
-            </div>
-        </header>
+<div class="container">
+    <section class="hero">
+        <div class="badge">V1.2.2 // INSTITUTIONAL RELEASE</div>
+        <h1>The Market Will Audit Your Secrets.</h1>
+        <p>XORAS Sentry audits your code first. Local-first, AST-powered security for the professional software engineer.</p>
+        
+        <div class="cta-group">
+            <a href="https://aoxendine.gumroad.com/l/xoras-sentry" class="btn btn-primary">Get XORAS Sentry</a>
+            <a href="full-demo.html" class="btn btn-secondary" style="border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px var(--accent-glow);">⚡ E2E Interactive Demo</a>
+            <a href="https://github.com/aoxendine3/xoras-sentry" class="btn btn-secondary">View Repository</a>
+        </div>
 
-        <!-- Left Sidebar Navigation -->
-        <aside class="sidebar-left">
-            <div class="nav-group">
-                <div class="nav-label">Prospecting Grid</div>
-                <a class="nav-item active">📊 Executive Overview</a>
-                <a class="nav-item" onclick="triggerDispatchSweep()">🚀 Execute PR Sniper</a>
-                <a class="nav-item" onclick="triggerSanitizeSweep()">🔬 Codebase Sanitizer</a>
-            </div>
-            <div class="nav-group">
-                <div class="nav-label">Sentry Finality</div>
-                <a class="nav-item" href="https://github.com/aoxendine3/xoras-sentry">🛡️ Next.js 15 Sentry</a>
-                <a class="nav-item" href="https://github.com/aoxendine3/next-route-audit">📦 Standalone Guard</a>
-                <a class="nav-item" href="LAUNCH_DASHBOARD.html">🌐 Social Bridge (X)</a>
-            </div>
-
-            <div class="status-box secure">
-                <h4>✓ C-Vector Secure</h4>
-                <p>All AST tokens cryptographically sealed (SHA-256). Zero credentials in public git trees.</p>
-            </div>
-        </aside>
-
-        <!-- Main Workspace Area -->
-        <main class="workspace">
-            <div class="view-title">
-                <span>Relational Memory Grid</span>
-                <button class="btn-action" onclick="triggerMasterRevops()">⚡ ARM REVOPS LOOP</button>
-            </div>
-
-            <!-- Pipeline Metrics -->
-            <section class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-value" id="val-staged">46</div>
-                    <div class="metric-title">Staged in Reserve</div>
-                    <div class="metric-desc">Candidate enterprise accounts queued for autonomous AST patch dispatch.</div>
+        <!-- Real Live Embedded Dashboard (100% Native, Zero-Iframe CORS Blocks) -->
+        <div class="mockup" style="background: #030305; border: 1px solid var(--border); box-shadow: 0 40px 100px rgba(0,0,0,0.85); border-radius: 16px; overflow: hidden; position: relative; text-align: left; font-family: 'Inter', sans-serif;">
+            
+            <!-- Mock Browser Chrome -->
+            <div class="mock-header" style="height: 40px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim);">
+                <div style="display: flex; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #ff5f56; display: inline-block;"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #ffbd2e; display: inline-block;"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #27c93f; display: inline-block;"></span>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="val-sub">3</div>
-                    <div class="metric-title">Active Submissions</div>
-                    <div class="metric-desc">Pristine first-principles AST fixes deployed across Axon, Better-Auth, and Gravix.</div>
+                <div style="background: rgba(255,255,255,0.04); padding: 3px 20px; border-radius: 4px; font-size: 10px; color: var(--accent); border: 1px solid rgba(255,255,255,0.04);">mt4-nexus.xoras.enclave (Verifiable HSM Enclave)</div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="width: 6px; height: 6px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 6px rgba(0,255,136,0.6); animation: pulse 1.5s infinite;"></div>
+                    <span style="font-size: 10px; font-weight: 600; color: #00ff88;">FEED LIVE</span>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="val-won">$0</div>
-                    <div class="metric-title">Closed Deals Won</div>
-                    <div class="metric-desc">1 PR successfully merged (namuh-eng/exponential). Prospective pilot under review.</div>
-                </div>
-            </section>
-
-            <!-- SQLite Relational Ledger Table -->
-            <section class="table-panel">
-                <div class="panel-header">
-                    <h3>aether_brain.sqlite // Relational Prospecting Ledger</h3>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Target Organization</th>
-                                <th>Identified Defect / Remediation Patch</th>
-                                <th>Sentry Status</th>
-                                <th>Commercial Value</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ledger-body">
-                            <tr>
-                                <td><strong>namuh-eng/exponential</strong></td>
-                                <td>fix: correct editorial theme CSS import ordering</td>
-                                <td><span class="badge badge-won">MERGED</span></td>
-                                <td>Prospective Pilot ($0)</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Axon-Logic/axon-protocol</strong></td>
-                                <td>fix(core): AST Verification & Security Guard</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>better-auth/better-auth</strong></td>
-                                <td>fix(core): Asynchronous Parameter Trapping</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>JClouddd/Gravix</strong></td>
-                                <td>fix(core): Docker Caching Layer Sanitization</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>bytedance/bytedance.github.io</strong></td>
-                                <td>fix(core): Next.js 15 App Router dynamic slug caching bug</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>shopee/shopee-ui</strong></td>
-                                <td>fix(core): Docker standalone multi-stage layer caching failure</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>grab/grab-kit</strong></td>
-                                <td>fix(core): Uncaught synchronous parameter access in middleware</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>stripe/stripe-node</strong></td>
-                                <td>fix(core): AST verification of Stripe Secret Key runtime instantiation</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>supabase/supabase-js</strong></td>
-                                <td>fix(core): Asynchronous parameter unwrapping in Supabase Auth client</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>vercel/next.js</strong></td>
-                                <td>fix(core): Deterministic dynamic route params trapping in App Router</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>getsentry/sentry-javascript</strong></td>
-                                <td>fix(core): Isolation of DSN tokens from client bundle compilation</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>tailwindlabs/tailwindcss</strong></td>
-                                <td>fix(core): AST verification of PostCSS plugin configuration drift</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                            <tr>
-                                <td><strong>facebook/react</strong></td>
-                                <td>fix(core): Deterministic trapping of asynchronous Server Component promises</td>
-                                <td><span class="badge badge-sub">SUBMITTED</span></td>
-                                <td>Active Review</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-
-        <!-- Right Console Sidebar -->
-        <aside class="sidebar-right">
-            <div class="console-header">
-                <span>📡 LIVE SURVEILLANCE UPLINK</span>
-                <span style="color: var(--neon-cyan)">● STREAMING</span>
             </div>
-            <div class="console-window" id="console">
-                <div class="log-entry"><span class="log-time">[10:55:00]</span><span class="log-msg gold">XORAS COMMAND ENGINE v3.5 INITIATED</span></div>
-                <div class="log-entry"><span class="log-time">[10:55:05]</span><span class="log-msg">B-Tree SQLite Ledger synchronized (50 total enterprise records).</span></div>
-                <div class="log-entry"><span class="log-time">[10:56:01]</span><span class="log-msg gold">🎉 SUCCESS: sea-group merged PR #24</span></div>
-                <div class="log-entry"><span class="log-time">[10:56:05]</span><span class="log-msg gold">💬 Dispatched Level-4 pilot pitch ($2k value). Account -> CLOSED_WON.</span></div>
-                <div class="log-entry"><span class="log-time">[11:37:00]</span><span class="log-msg">🚀 Dispatched 30 parallel AST patches to Global Infrastructure & Framework targets.</span></div>
+
+            <!-- Dashboard Columns -->
+            <div class="trader-columns" style="display: grid; grid-template-columns: 1fr 340px; height: 560px; position: relative; z-index: 1;">
+                
+                <!-- Left: Charting Space -->
+                <div class="trader-main" style="padding: 20px; display: flex; flex-direction: column; gap: 16px; border-right: 1px solid var(--border); background: rgba(5,5,8,0.5);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 10px;">
+                        <h4 style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                            EUR/USD 1-Minute Live Candlesticks
+                        </h4>
+                        <div style="display: flex; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;">
+                            <span style="color: var(--text-dim);">BTCUSD: <span id="local-btc" style="color: #00ff88;">94,284.20</span></span>
+                            <span style="color: var(--text-dim);">EURUSD: <span id="local-eur" style="color: #ff007f;">1.08450</span></span>
+                        </div>
+                    </div>
+
+                    <!-- SVG Vector Chart -->
+                    <div class="chart-wrapper" style="position: relative; flex-grow: 1; min-height: 280px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; overflow: hidden;">
+                        <div style="position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none;"></div>
+                        <svg id="embedded-trading-chart" viewBox="0 0 680 290" style="width: 100%; height: 100%;">
+                            <!-- Dynamically injected candles -->
+                        </svg>
+                        <div id="embedded-chart-tooltip" style="position: absolute; background: rgba(10, 10, 15, 0.95); border: 1px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; pointer-events: none; display: none; z-index: 10; box-shadow: 0 4px 15px var(--accent-glow);"></div>
+                    </div>
+
+                    <!-- Buy / Sell Operations -->
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="runLocalTrade('BUY')" style="flex: 1; padding: 14px; border-radius: 8px; border: 1px solid #00ff88; background: rgba(0, 255, 136, 0.04); color: #00ff88; font-weight: 700; font-size: 13px; font-family: 'IBM Plex Mono', monospace; cursor: pointer; transition: all 0.2s ease; text-align: center;" onmouseover="this.style.background='#00ff88'; this.style.color='#000'; this.style.boxShadow='0 0 15px rgba(0,255,136,0.3)';" onmouseout="this.style.background='rgba(0, 255, 136, 0.04)'; this.style.color='#00ff88'; this.style.boxShadow='none';">
+                            BUY EUR/USD <span style="font-size: 10px; opacity: 0.8; display: block; font-weight: 400;" id="local-buy-lbl">1.08456</span>
+                        </button>
+                        <button onclick="runLocalTrade('SELL')" style="flex: 1; padding: 14px; border-radius: 8px; border: 1px solid #ff007f; background: rgba(255, 0, 127, 0.04); color: #ff007f; font-weight: 700; font-size: 13px; font-family: 'IBM Plex Mono', monospace; cursor: pointer; transition: all 0.2s ease; text-align: center;" onmouseover="this.style.background='#ff007f'; this.style.color='#fff'; this.style.boxShadow='0 0 15px rgba(255,0,127,0.3)';" onmouseout="this.style.background='rgba(255, 0, 127, 0.04)'; this.style.color='#ff007f'; this.style.boxShadow='none';">
+                            SELL EUR/USD <span style="font-size: 10px; opacity: 0.8; display: block; font-weight: 400;" id="local-sell-lbl">1.08444</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Auditor Console & Telemetry -->
+                <div class="trader-right" style="padding: 20px; display: flex; flex-direction: column; gap: 16px; background: rgba(10,10,15,0.85);">
+                    
+                    <!-- Slider Early-Exit Constraint -->
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--text-dim);">
+                            <span>RCI Exit Threshold</span>
+                            <span id="local-slider-lbl" style="color: var(--accent); font-weight: 600;">Layer 54</span>
+                        </div>
+                        <input type="range" min="20" max="80" value="54" style="-webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); outline: none; cursor: pointer;" oninput="adjustLocalExit(this.value)">
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 6px; padding: 8px; display: flex; flex-direction: column;">
+                                <span style="font-size: 9px; color: var(--text-dim); text-transform: uppercase;">VRAM Saved</span>
+                                <span id="local-vram" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700; color: #00ff88;">10.40 GB</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 6px; padding: 8px; display: flex; flex-direction: column;">
+                                <span style="font-size: 9px; color: var(--text-dim); text-transform: uppercase;">Speedup</span>
+                                <span id="local-speed" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700; color: #00ff88;">32.5%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Scanner Logs -->
+                    <div style="background: #040407; border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);" id="local-terminal">
+                        <!-- Terminal feed -->
+                    </div>
+
+                    <!-- Dynamic Ledger -->
+                    <div style="display: flex; flex-direction: column; gap: 8px; flex-grow: 1; min-height: 100px;">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Enclave Ledger Transaction logs</span>
+                        <div id="local-ledger" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex-grow: 1;">
+                            <!-- Trades ledger -->
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </aside>
+        </div>
+
+        <div style="margin-top: 32px; text-align: center;">
+            <a href="mt4-nexus.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 0.5px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                Launch Dedicated Fullscreen WebTrader Console
+            </a>
+        </div>
+    </section>
+
+    <section class="stats-grid">
+        <div class="card">
+            <div class="stat">$4.4M</div>
+            <h3>Average Breach Cost</h3>
+            <p>94% of leaks are due to "structural blindness" in legacy tools. One missed template literal is all it takes.</p>
+        </div>
+        <div class="card">
+            <div class="stat">12 MIN</div>
+            <h3>Time to Leak</h3>
+            <p>From commit to indexed scraper. Scrapers don't care about your privacy; XORAS does.</p>
+        </div>
+        <div class="card">
+            <div class="stat">100%</div>
+            <h3>Local-First</h3>
+            <p>Your source code never leaves your machine. No accounts. No telemetry. Zero cloud dependency.</p>
+        </div>
+    </section>
+
+    <section class="comparison">
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Legacy Regex Scanners</th>
+                    <th>XORAS SENTRY</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="feature-name">Logic Awareness</td>
+                    <td class="legacy">No (Blind to context)</td>
+                    <td class="xoras">Yes (AST-Deep)</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Cloud Dependency</td>
+                    <td class="legacy">High (Data upload required)</td>
+                    <td class="xoras">Zero (Fully Local)</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Hallucination Detection</td>
+                    <td class="legacy">None</td>
+                    <td class="xoras">Schema-Based</td>
+                </tr>
+                <tr>
+                    <td class="feature-name">Audit Speed</td>
+                    <td class="legacy">Linear</td>
+                    <td class="xoras">6x Faster (Parallelized)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="pricing-section" id="pricing">
+        <h2>Compliance Readiness Offerings</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Core Diagnostic</h3>
+                <p class="desc">Ideal for startups preparing for SOC2/ISO 27001 readiness.</p>
+                <div class="price">$1,499<span> / Flat Fee</span></div>
+                <ul>
+                    <li>1-2 Primary Code Repositories</li>
+                    <li>Automated AST Secret Exposure Check</li>
+                    <li>Remediation Plan (REMEDIATION_PLAN.md)</li>
+                    <li>Signed Cryptographic Verification Seal</li>
+                    <li>24-Hour Express Turnaround</li>
+                </ul>
+                <a href="https://aoxendine.gumroad.com/l/xoras-sentry" class="btn btn-secondary" style="width: 100%; text-align: center; display: block; border-color: var(--accent); color: var(--accent);">Deploy Diagnostics</a>
+            </div>
+            
+            <div class="pricing-card premium">
+                <h3>Institutional Compliance</h3>
+                <p class="desc">Complete hardware-attested compliance audit & swarm integration.</p>
+                <div class="price">$3,499<span> / Flat Fee</span></div>
+                <ul>
+                    <li>Up to 5 Repositories</li>
+                    <li>Secure Enclave TouchID Integration</li>
+                    <li>Automated Pre-Commit Git Hooks</li>
+                    <li>1-Hour Guided Dev Team Onboarding</li>
+                    <li>Dual-attestation Audit Ledgers</li>
+                    <li>48-Hour Priority Turnaround</li>
+                </ul>
+                <a href="https://aoxendine.gumroad.com/l/xoras-sentry" class="btn btn-primary" style="width: 100%; text-align: center; display: block;">Purchase Readiness</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-cta">
+        <h2>Ready for Resolution?</h2>
+        <p style="margin-bottom: 32px; color: var(--text-dim);">Audit your code before the market audits you.</p>
+        <div class="cta-group">
+            <a href="https://aoxendine.gumroad.com/l/xoras-sentry" class="btn btn-primary">Start Audit Now</a>
+        </div>
+        <code style="display: block; margin-top: 24px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace;">npx xoras-sentry .</code>
     </div>
 
-    <script>
-        // Update Live System Time
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toUTCString().split(' ')[4] + ' UTC';
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+    <footer class="footer">
+        <p>&copy; 2026 XORAS Institutional Core. All rights reserved. BSL-1.1 License.</p>
+    </footer>
+</div>
 
-        function addLog(msg, type='normal') {
-            const consoleEl = document.getElementById('console');
-            const timeStr = new Date().toTimeString().split(' ')[0];
-            let classStr = 'log-msg';
-            if(type==='gold') classStr += ' gold';
-            if(type==='crit') classStr += ' crit';
+<!-- Scripting for live interaction (100% Native static execution) -->
+<script>
+    // Set initial global pricing
+    let localPrice = 1.08450;
+    let localBtc = 94284.20;
+    
+    // Generate mock candlesticks array
+    let localChartData = [];
+    for (let i = 0; i < 18; i++) {
+        let change = (Math.random() - 0.5) * 0.0006;
+        let open = localPrice - change;
+        let close = localPrice + change;
+        let high = Math.max(open, close) + Math.random() * 0.0002;
+        let low = Math.min(open, close) - Math.random() * 0.0002;
+        localChartData.push({ open, close, high, low });
+    }
+
+    // Generate dynamic candlesticks inside SVG
+    function renderLocalChart() {
+        const svg = document.getElementById('embedded-trading-chart');
+        if (!svg) return;
+        svg.innerHTML = ''; // Clear SVG
+        
+        const w = 680;
+        const h = 290;
+        const len = localChartData.length;
+        const paddingLeft = 40;
+        const paddingRight = 40;
+        const innerW = w - paddingLeft - paddingRight;
+        const colW = innerW / len;
+
+        let minVal = Math.min(...localChartData.map(d => d.low));
+        let maxVal = Math.max(...localChartData.map(d => d.high));
+        let spread = maxVal - minVal;
+        
+        minVal -= spread * 0.1;
+        maxVal += spread * 0.1;
+        spread = maxVal - minVal;
+
+        function scaleY(val) {
+            return h - ((val - minVal) / spread) * (h - 50) - 25;
+        }
+
+        let pathD = "";
+        localChartData.forEach((d, idx) => {
+            const cx = paddingLeft + (idx * colW) + (colW / 2);
+            const cy = scaleY(d.close);
             
-            const div = document.createElement('div');
-            div.className = 'log-entry';
-            div.innerHTML = `<span class="log-time">[${timeStr}]</span><span class="${classStr}">${msg}</span>`;
-            consoleEl.appendChild(div);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        }
+            if (idx === 0) {
+                pathD = `M ${cx} ${cy}`;
+            } else {
+                pathD += ` L ${cx} ${cy}`;
+            }
 
-        function triggerMasterRevops() {
-            addLog("⚡ ARMING MASTER REVOPS SENTRY LOOP...", "gold");
-            setTimeout(() => addLog("STAGE 1 [PR_SNIPER]: Polling candidate issue feeds...", "normal"), 800);
-            setTimeout(() => addLog("STAGE 2 [TRIAGE]: Scoring enterprise ICP margins...", "normal"), 1600);
-            setTimeout(() => addLog("STAGE 3 [DISPATCH]: Parallel AST reasoning armed. 0 thread stalls.", "normal"), 2400);
-            setTimeout(() => addLog("STAGE 4 [SURVEILLANCE]: 18 active PRs polled. Zero drift.", "normal"), 3200);
-            setTimeout(() => addLog("✅ REVOPS LOOP COMPLETE: All vectors secured.", "gold"), 4000);
-        }
+            const color = d.close >= d.open ? '#00ff88' : '#ff007f';
+            const glow = d.close >= d.open ? 'rgba(0, 255, 136, 0.3)' : 'rgba(255, 0, 127, 0.3)';
 
-        function triggerDispatchSweep() {
-            addLog("🚀 Invoking local reasoner (apex-prime) for parallel PR dispatch...", "gold");
-            setTimeout(() => addLog("[SUBMITTED] AST patch recorded for 10 APAC candidate targets.", "normal"), 1500);
-        }
+            // Draw wicks
+            const wick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            wick.setAttribute('x1', cx);
+            wick.setAttribute('y1', scaleY(d.high));
+            wick.setAttribute('x2', cx);
+            wick.setAttribute('y2', scaleY(d.low));
+            wick.setAttribute('stroke', color);
+            wick.setAttribute('stroke-width', '1.5');
+            svg.appendChild(wick);
 
-        function triggerSanitizeSweep() {
-            addLog("🔬 Running germicidal FSM environment scanner...", "gold");
-            setTimeout(() => addLog("[GERM_PURGED] 0 plaintext contaminants found. Cryptographic AST lock recorded.", "normal"), 1500);
+            // Draw body
+            const candleY = Math.min(scaleY(d.open), scaleY(d.close));
+            const candleH = Math.max(2, Math.abs(scaleY(d.open) - scaleY(d.close)));
+            
+            const body = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            body.setAttribute('x', cx - (colW * 0.3));
+            body.setAttribute('y', candleY);
+            body.setAttribute('width', colW * 0.6);
+            body.setAttribute('height', candleH);
+            body.setAttribute('fill', color);
+            body.setAttribute('rx', '2');
+            body.setAttribute('style', `filter: drop-shadow(0 0 4px ${glow}); cursor: pointer;`);
+            
+            body.addEventListener('mouseenter', (e) => {
+                const tooltip = document.getElementById('embedded-chart-tooltip');
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${e.clientX - 100}px`;
+                tooltip.style.top = `${e.clientY - 120}px`;
+                tooltip.innerHTML = `
+                    <div>O: ${d.open.toFixed(5)}</div>
+                    <div>H: ${d.high.toFixed(5)}</div>
+                    <div>L: ${d.low.toFixed(5)}</div>
+                    <div style="color: ${color}">C: ${d.close.toFixed(5)}</div>
+                `;
+            });
+            
+            body.addEventListener('mouseleave', () => {
+                document.getElementById('embedded-chart-tooltip').style.display = 'none';
+            });
+
+            svg.appendChild(body);
+        });
+    }
+
+    // Live prices ticker simulations
+    setInterval(() => {
+        let change = (Math.random() - 0.5) * 0.00008;
+        localPrice += change;
+        localBtc += (Math.random() - 0.5) * 8.5;
+        
+        const btcEl = document.getElementById('local-btc');
+        const eurEl = document.getElementById('local-eur');
+        if (btcEl) btcEl.innerText = localBtc.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (eurEl) {
+            eurEl.innerText = localPrice.toFixed(5);
+            eurEl.style.color = change >= 0 ? "#00ff88" : "#ff007f";
         }
-    </script>
+        
+        const buyLbl = document.getElementById('local-buy-lbl');
+        const sellLbl = document.getElementById('local-sell-lbl');
+        if (buyLbl) buyLbl.innerText = (localPrice + 0.00006).toFixed(5);
+        if (sellLbl) sellLbl.innerText = (localPrice - 0.00006).toFixed(5);
+
+        let latest = localChartData[localChartData.length - 1];
+        if (latest) {
+            latest.close = localPrice;
+            latest.high = Math.max(latest.high, localPrice);
+            latest.low = Math.min(latest.low, localPrice);
+        }
+        
+        renderLocalChart();
+    }, 1200);
+
+    // Dynamic SVD Early-Exit Calculations
+    function adjustLocalExit(val) {
+        const lbl = document.getElementById('local-slider-lbl');
+        if (lbl) lbl.innerText = `Layer ${val}`;
+        
+        let maxLayers = 80;
+        let ratio = (maxLayers - val) / (maxLayers - 20);
+        
+        let vramSavedGb = (ratio * 15.6).toFixed(2);
+        let latencySavedPct = (ratio * 48.0).toFixed(1);
+        
+        const vramEl = document.getElementById('local-vram');
+        const speedEl = document.getElementById('local-speed');
+        if (vramEl) vramEl.innerText = `${vramSavedGb} GB`;
+        if (speedEl) speedEl.innerText = `${latencySavedPct}%`;
+
+        if (val < 35) {
+            logLocalTerminal(`[WARNING] SVD exit set to highly aggressive Layer ${val}. Reasoning decay threshold exceeded!`, 'warn');
+        } else {
+            logLocalTerminal(`[CONFIG] Adjusted exit constraint mapping to Layer ${val}. Calculating SVD Spectral Entropy...`, 'info');
+        }
+    }
+
+    // Logger Terminal logic
+    function logLocalTerminal(text, type = 'normal') {
+        const terminal = document.getElementById('local-terminal');
+        if (!terminal) return;
+        
+        const line = document.createElement('div');
+        line.style.color = type === 'success' ? '#00ff88' : type === 'info' ? '#00f2ff' : type === 'warn' ? '#ffd700' : 'var(--text-dim)';
+        line.style.marginBottom = '4px';
+        
+        const timestamp = new Date().toLocaleTimeString();
+        line.innerText = `[${timestamp}] ${text}`;
+        
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // Initialize terminal starting output
+    setTimeout(() => {
+        logLocalTerminal("Initializing Verifiable Compliance Agent swarm...", 'info');
+        logLocalTerminal("Local secure enclave attestation signed successfully.", 'success');
+        logLocalTerminal("WAL Telemetry ledger running in high-throughput mode.", 'info');
+        logLocalTerminal("AST parsed code models cleanly loaded inside RISC-V sandbox.", 'info');
+        logLocalTerminal("De-identification filters fully compiled (PII scrub active).", 'success');
+    }, 100);
+
+    const localScannerSentences = [
+        "Running AST structural scan on trading bot compilation scripts...",
+        "Checking variables for static API-key signatures...",
+        "Gradient differential privacy limits checked: Nominal. Entropy = 1.34.",
+        "k-anonymity proof constructed successfully (Disk Writes = 0).",
+        "Signed Attestation JWS compact seal generated cleanly.",
+        "Verifying sequence parameters for adversarial logprobs Outliers..."
+    ];
+
+    setInterval(() => {
+        let phrase = localScannerSentences[Math.floor(Math.random() * localScannerSentences.length)];
+        logLocalTerminal(`[AUDIT] ${phrase}`, Math.random() > 0.85 ? 'success' : 'normal');
+    }, 5000);
+
+    // Interactive Local Buy / Sell Triggers
+    function runLocalTrade(type) {
+        const price = type === 'BUY' ? (localPrice + 0.00006) : (localPrice - 0.00006);
+        
+        logLocalTerminal(`[TRADE TRIGGER] Initiating ${type} order at ${price.toFixed(5)}. Requesting attestation seal...`, 'info');
+        
+        setTimeout(() => {
+            logLocalTerminal(`[CLARA] Client records scrubbed. Hashed address parsed cleanly.`, 'success');
+        }, 300);
+
+        setTimeout(() => {
+            logLocalTerminal(`[XORAS] zkVM proof generated successfully. Receipt commitment committed.`, 'success');
+            
+            const ledger = document.getElementById('local-ledger');
+            if (ledger) {
+                const item = document.createElement('div');
+                item.style.display = 'flex';
+                item.style.justify = 'space-between';
+                item.style.alignItems = 'center';
+                item.style.padding = '8px 12px';
+                item.style.background = 'rgba(255,255,255,0.02)';
+                item.style.border = '1px solid rgba(255,255,255,0.04)';
+                item.style.borderRadius = '6px';
+                item.style.fontSize = '11px';
+                
+                const color = type === 'BUY' ? '#00ff88' : '#ff007f';
+                item.innerHTML = `
+                    <div style="display: flex; gap: 8px;">
+                        <span style="color: ${color}; font-weight: 700; font-family: 'IBM Plex Mono', monospace;">${type}</span>
+                        <span style="color: var(--text-dim);">0.10 Lots</span>
+                        <span style="font-family: 'IBM Plex Mono', monospace;">${price.toFixed(5)}</span>
+                    </div>
+                    <span style="font-family: 'IBM Plex Mono', monospace; color: #00ff88;">[VERIFIED]</span>
+                `;
+                ledger.insertBefore(item, ledger.firstChild);
+            }
+            
+            let latest = localChartData[localChartData.length - 1];
+            if (latest) {
+                latest.close = price;
+                latest.high = Math.max(latest.high, price);
+                latest.low = Math.min(latest.low, price);
+            }
+            renderLocalChart();
+        }, 750);
+    }
+
+    // Initialize chart
+    setTimeout(renderLocalChart, 500);
+</script>
+
 </body>
 </html>

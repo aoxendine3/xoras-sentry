@@ -20,8 +20,11 @@ jobs:
       - name: Install XORAS Sentry CLI
         run: npm install -g integrity-sentry-core
 
+      - name: Lint code
+        run: npm run lint
+
       - name: Run XORAS Sentry Guard
-        uses: ./ 
+        uses: ./
         with:
           target_path: '.'
           fail_on_secrets: 'true'

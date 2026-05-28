@@ -12,6 +12,12 @@
     "PORT": {
       "regex": "^[0-9]{4,5}$",
       "description": "Service Port Number"
+    },
+    "XORAS_PRINCIPAL_SECRET": {
+      "description": "Secret used to sign the audit payloads using HMAC-SHA256"
+    },
+    "GITHUB_REPOSITORY": {
+      "description": "Standard GitHub Action repository indicator"
     }
   },
   "customPatterns": [

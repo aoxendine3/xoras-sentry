@@ -16,8 +16,10 @@
   ],
   "author": "Anthony Oxendine",
   "license": "MIT",
+  "gypfile": true,
   "dependencies": {
     "acorn": "^8.16.0",
-    "acorn-walk": "^8.3.5"
+    "acorn-walk": "^8.3.5",
+    "node-addon-api": "^8.0.0"
   }
 }

@@ -18,7 +18,7 @@ async function run() {
 
         // 2. Execute Hardened Local Audit
         console.log("🔍 XORAS: Executing Deterministic Scoped-Audit...");
-        const auditScript = path.join(__dirname, '../../scripts/local_audit.js');
+        const auditScript = path.join(__dirname, '../../scripts/local_audit.cjs');
         
         try {
             const oidcFlag = token ? `--oidc-token=${token}` : '';

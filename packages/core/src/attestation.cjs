@@ -4,6 +4,14 @@ const path = require('path');
 
 const KEY_PATH = path.join(process.cwd(), '.attestation_key.pem');
 
+// Attempt to load the compiled native Secure Enclave bridge
+let enclaveBridge = null;
+try {
+    enclaveBridge = require('../build/Release/enclave_bridge.node');
+} catch (e) {
+    // Graceful fallback for non-macOS or non-compiled runs
+}
+
 /**
  * Machine Attestation Protocol
  * Ensures audit reports are signed and non-repudiable.
@@ -23,6 +31,30 @@ function generateAttestationKey() {
 }
 
 function signArtifact(data) {
+    if (enclaveBridge) {
+        try {
+            // Attempt to ensure key is generated in Secure Enclave
+            try {
+                enclaveBridge.generateKey();
+            } catch (e) {
+                // Key already registered or TouchID cancelled
+            }
+
+            const dataStr = JSON.stringify(data);
+            const sha256Hash = crypto.createHash('sha256').update(dataStr).digest();
+            const signature = enclaveBridge.sign(sha256Hash).toString('hex');
+
+            return {
+                artifact: data,
+                signature,
+                timestamp: Date.now(),
+                agent: 'XORAS_SECURE_ENCLAVE_V2'
+            };
+        } catch (err) {
+            // Fallback to standard RSA if biometric validation fails or is cancelled
+        }
+    }
+
     if (!fs.existsSync(KEY_PATH)) generateAttestationKey();
 
     const privateKey = fs.readFileSync(KEY_PATH, 'utf8');

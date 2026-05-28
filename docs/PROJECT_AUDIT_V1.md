@@ -12,7 +12,7 @@ This audit documents the transformation of the XORAS environment auditing infras
 - **Safety Guards**: Implemented O(1) memory complexity and 200ms per-file execution ceilings.
 - **Result**: The scanner is resilient against "Time-of-Check to Time-of-Use" (TOCTOU) and Regex Denial of Service (ReDoS) attacks.
 
-### 2.3 Revenue Finality
+### 2.3 Revenue Resolution
 - **The Ledger**: Developed an idempotent fulfillment ledger to prevent double-dipping in financial events.
 - **Live-Fire Verification**: Successfully simulated a $4,999.00 transaction through the hardened Stripe bridge.
 
@@ -31,4 +31,4 @@ This audit documents the transformation of the XORAS environment auditing infras
 - **Friction Reduction**: Added `--warn-only` mode and a 60-second quickstart guide to enable universal adoption.
 
 ---
-**Audit Status: COMPLETED. | Finality: STABLE.**
+**Audit Status: COMPLETED. | Resolution: STABLE.**

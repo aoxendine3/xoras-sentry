@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'XORAS Sentry // Institutional Code Integrity',
-  description: 'AST-powered, local-first security auditing for the sovereign software engineer. Catch hardcoded secrets and hallucinations before the market does.',
+  description: 'AST-powered, local-first security auditing for the professional software engineer. Catch hardcoded secrets and hallucinations before the market does.',
 };
 
 export default function Home() {
@@ -34,7 +34,7 @@ export default function Home() {
             The Market Will<br />Audit Your Secrets.
           </h1>
           <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12 font-light">
-            XORAS Sentry audits your code first. Local-first, AST-powered security for the sovereign software engineer.
+            XORAS Sentry audits your code first. Local-first, AST-powered security for the professional software engineer.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 mb-20">
             <a href="https://aoxendine.gumroad.com/l/xoras-sentry" className="px-8 py-4 bg-cyan-500 text-black font-bold rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all">
@@ -130,7 +130,7 @@ export default function Home() {
           <div className="absolute bottom-[-80px] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none" />
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-cyan-400 font-mono text-xs tracking-widest mb-6">
-              READY FOR FINALITY
+              READY FOR RESOLUTION
             </div>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-6">Audit Before the<br />Market Does.</h2>
             <p className="text-zinc-400 mb-10 text-lg">One command. Zero cloud. Institutional integrity.</p>

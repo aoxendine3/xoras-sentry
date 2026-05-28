@@ -2,21 +2,34 @@
   "name": "xoras-sentry-monorepo",
   "version": "1.2.2",
   "private": true,
+  "type": "module",
   "description": "Professional Integrity Auditing Suite (Monorepo)",
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
   "scripts": {
-    "test": "node packages/core/tests/sandbox.test.cjs && node tests/audit.test.cjs && node tests/infrastructure_gate.test.cjs && node tests/revenue.test.cjs && node tests/spectrum.test.cjs",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "test": "node packages/core/tests/sandbox.test.cjs && node tests/audit.test.cjs && node tests/infrastructure_gate.test.cjs && node tests/revenue.test.cjs && node tests/spectrum.test.cjs && node sandbox/cross_platform_sandbox.cjs && node sandbox/atomics_latency_lock.cjs && node sandbox/system_audit_suite.cjs",
     "audit": "npm run audit --workspace=packages/cli",
     "clean": "npm run audit --workspace=packages/cli -- --janitor",
-    "ui": "npm run start --workspace=packages/ui"
+    "ui": "npm run start --workspace=packages/ui",
+    "prepare": "bash scripts/install_hook.sh",
+    "build": "npm run build --workspace=apps/web"
   },
   "author": "Anthony Oxendine",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^17.4.2",
     "stripe": "^22.1.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "postcss": "^8.5.15",
+    "prettier": "^3.2.5"
   }
 }

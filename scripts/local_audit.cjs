@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { execSync } = require('child_process');
-const PrincipalSigner = require('../action/src/lib/signer');
+const PrincipalSigner = require('../action/src/lib/signer.cjs');
 
 /**
  * XORAS Sentinel (Self-Healing v1.0)
@@ -143,7 +143,7 @@ function runAudit() {
         console.log("🩹 XORAS: Remediation Plan generated at REMEDIATION_PLAN.md");
     }
 
-    // 5. Signed Finality Report (With OIDC Attestation)
+    // 5. Signed Resolution Report (With OIDC Attestation)
     const report = {
         metadata: {
             engine: "XORAS_L5",
@@ -156,8 +156,8 @@ function runAudit() {
     };
 
     const signedReport = signer.sign(report);
-    fs.writeFileSync('AUDIT_FINALITY.jws', signedReport);
-    console.log(`\n✅ Audit Complete. Signed finality recorded in AUDIT_FINALITY.jws`);
+    fs.writeFileSync('AUDIT_RESOLUTION.jWS', signedReport);
+    console.log(`\n✅ Audit Complete. Signed resolution recorded in AUDIT_RESOLUTION.jws`);
 
     if (report.status === 'FAILED') {
         process.exit(1);

@@ -30,7 +30,7 @@ async function testRevenueIntegrity() {
         console.log(`✅ Second Pass: ${res2.status}`);
 
         if (res1.status === 'SUCCESS' && res2.status === 'DUPLICATE') {
-            console.log('\n🏛️ REVENUE INTEGRITY VERIFIED: Deterministic Finality achieved.');
+            console.log('\n🏛️ REVENUE INTEGRITY VERIFIED: Deterministic RESOLUTION achieved.');
         } else {
             throw new Error('Idempotency failure!');
         }

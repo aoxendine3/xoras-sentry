@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MT4 Nexus // Xoras Verifiable AI WebTrader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030305;
+            --surface: rgba(10, 10, 16, 0.7);
+            --surface-hover: rgba(20, 20, 30, 0.85);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(0, 242, 255, 0.15);
+            --text: #ffffff;
+            --text-dim: #7e7e8c;
+            
+            /* Curated Neon Color Tokens */
+            --cyan: #00f2ff;
+            --cyan-glow: rgba(0, 242, 255, 0.35);
+            --green: #00ff88;
+            --green-glow: rgba(0, 255, 136, 0.3);
+            --magenta: #ff007f;
+            --magenta-glow: rgba(255, 0, 127, 0.3);
+            --amber: #ffd700;
+            --amber-glow: rgba(255, 215, 0, 0.3);
+            
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient blurred neon backgrounds */
+        .ambient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(180px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.12;
+        }
+        .orb-1 { top: -200px; left: -100px; width: 600px; height: 600px; background: radial-gradient(circle, var(--cyan), transparent); }
+        .orb-2 { bottom: -200px; right: -100px; width: 600px; height: 600px; background: radial-gradient(circle, var(--green), transparent); }
+        .orb-3 { top: 40%; left: 50%; width: 500px; height: 500px; background: radial-gradient(circle, var(--magenta), transparent); transform: translate(-50%, -50%); }
+
+        /* App Shell */
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(60px) saturate(180%);
+            background: rgba(3, 3, 5, 0.4);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            background: rgba(5, 5, 8, 0.65);
+            border-right: 1px solid var(--border);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--cyan), var(--green));
+            box-shadow: 0 0 15px var(--cyan-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #000;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+        }
+
+        .brand-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        .nav-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            padding-left: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--cyan);
+            box-shadow: inset 4px 0 15px rgba(0, 242, 255, 0.05), 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Swarm Status Panel */
+        .swarm-panel {
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .swarm-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.3; transform: scale(0.9); }
+        }
+
+        .agent-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .agent-pills img {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .agent-pills img:hover {
+            transform: scale(1.2);
+            border-color: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan-glow);
+        }
+
+        /* Main View */
+        .main-view {
+            padding: 32px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Section */
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-info h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .view-info p {
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        .ticker-bar {
+            display: flex;
+            gap: 16px;
+        }
+
+        .ticker-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ticker-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .ticker-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .ticker-val.up { color: var(--green); }
+        .ticker-val.down { color: var(--magenta); }
+
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 28px;
+            flex-grow: 1;
+        }
+
+        /* Glassmorphic Panel Card */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: var(--transition);
+        }
+
+        .panel:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 12px 40px rgba(0, 242, 255, 0.03);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 14px;
+        }
+
+        .panel-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Vector Candlestick Chart */
+        .chart-container {
+            position: relative;
+            flex-grow: 1;
+            min-height: 320px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-mesh {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: rgba(10, 10, 15, 0.95);
+            border: 1px solid var(--cyan);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            pointer-events: none;
+            display: none;
+            z-index: 10;
+            box-shadow: 0 4px 20px var(--cyan-glow);
+        }
+
+        /* Order Box / Trade Triggers */
+        .trade-box {
+            display: flex;
+            gap: 16px;
+        }
+
+        .trade-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .trade-btn.buy {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.05));
+            border: 1px solid var(--green);
+            color: var(--green);
+        }
+
+        .trade-btn.buy:hover {
+            background: var(--green);
+            color: #000;
+            box-shadow: 0 0 25px var(--green-glow);
+            transform: translateY(-2px);
+        }
+
+        .trade-btn.sell {
+            background: linear-gradient(135deg, rgba(255, 0, 127, 0.15), rgba(255, 0, 127, 0.05));
+            border: 1px solid var(--magenta);
+            color: var(--magenta);
+        }
+
+        .trade-btn.sell:hover {
+            background: var(--magenta);
+            color: #fff;
+            box-shadow: 0 0 25px var(--magenta-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-lbl {
+            font-size: 11px;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        /* Interactive AST Terminal */
+        .terminal-box {
+            background: #040407;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .terminal-line {
+            color: var(--text-dim);
+            opacity: 0.85;
+            transition: var(--transition);
+        }
+        .terminal-line.success { color: var(--green); }
+        .terminal-line.info { color: var(--cyan); }
+        .terminal-line.warn { color: var(--amber); }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-dim);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Dynamic Slider Control */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .slider-val {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .custom-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.08);
+            outline: none;
+        }
+
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--cyan);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--cyan-glow);
+            transition: var(--transition);
+        }
+
+        .custom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 18px var(--cyan);
+        }
+
+        /* Savings Badges */
+        .savings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .savings-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .savings-title {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .savings-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        /* Transaction Log */
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 150px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .tx-details {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tx-type {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+        .tx-type.buy { color: var(--green); }
+        .tx-type.sell { color: var(--magenta); }
+
+        .tx-price {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient glows -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
+    <div class="app-container">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="LANDING_PAGE.html" class="brand">
+                <div class="brand-logo">X</div>
+                <span class="brand-text">XORAS SYSTEMS</span>
+            </a>
+
+            <nav class="nav-section">
+                <span class="nav-label">Terminal Gateway</span>
+                <a href="#" class="nav-item active">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                    MT4 Nexus WebTrader
+                </a>
+                <a href="full-demo.html" class="nav-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 17V7"></path><path d="M15 17V12"></path></svg>
+                    AST Scanner
+                </a>
+                <a href="LAUNCH_DASHBOARD.html" class="nav-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Universal Launch
+                </a>
+            </nav>
+
+            <nav class="nav-section">
+                <span class="nav-label">Attestation Controls</span>
+                <a href="http://localhost:3000/" class="nav-item" target="_blank">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="16" x="4" y="4" rx="2"></rect><path d="M9 22V12h6v10"></path></svg>
+                    Swarm Oversight Center
+                </a>
+            </nav>
+
+            <!-- Swarm Status -->
+            <div class="swarm-panel">
+                <div class="swarm-title">
+                    <div class="pulse-dot"></div>
+                    VERIFIABLE ENCLAVE ACTIVE
+                </div>
+                <div class="agent-pills">
+                    <!-- Embedded high-fidelity agent avatar visual stack -->
+                    <img src="assets/avatars/vance.png" title="Vance // Systems & Performance" alt="VNC">
+                    <img src="assets/avatars/xoras.png" title="XORAS // Security Attestation" alt="XRS">
+                    <img src="assets/avatars/nova.png" title="Nova // Cloud IaC" alt="NVA">
+                    <img src="assets/avatars/aurelius.png" title="Aurelius // Dynamic SLA Billing" alt="ARL">
+                    <img src="assets/avatars/clara.png" title="Clara // HIPAA Data Privacy" alt="CLR">
+                    <img src="assets/avatars/lexcore.png" title="LEX CORE // Prompt Compiler" alt="LEX">
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main View -->
+        <main class="main-view">
+            
+            <!-- View Header -->
+            <header class="view-header">
+                <div class="view-info">
+                    <h1>MT4 Nexus Verifiable WebTrader</h1>
+                    <p>High-Throughput Arbitrage Trading enclosing zero-trust AST compliance sweeps.</p>
+                </div>
+                <div class="ticker-bar">
+                    <div class="ticker-card">
+                        <span class="ticker-name">BTCUSD</span>
+                        <span class="ticker-val up" id="ticker-btc">94,284.20</span>
+                    </div>
+                    <div class="ticker-card">
+                        <span class="ticker-name">EURUSD</span>
+                        <span class="ticker-val down" id="ticker-eur">1.08450</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                
+                <!-- Left Panel: Live Chart -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                            EUR/USD 1-Minute Live Candlesticks
+                        </h3>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green);">● FEED LIVE</span>
+                    </div>
+
+                    <!-- Candlestick SVG Container -->
+                    <div class="chart-container">
+                        <div class="chart-mesh"></div>
+                        <svg class="chart-svg" id="trading-chart" viewBox="0 0 800 360">
+                            <!-- SVG elements injected dynamically -->
+                        </svg>
+                        <div class="chart-tooltip" id="chart-tooltip"></div>
+                    </div>
+
+                    <!-- Buy / Sell Triggers -->
+                    <div class="trade-box">
+                        <button class="trade-btn buy" onclick="executeTrade('BUY')">
+                            BUY EUR/USD
+                            <span class="btn-lbl" id="buy-price">1.08456</span>
+                        </button>
+                        <button class="trade-btn sell" onclick="executeTrade('SELL')">
+                            SELL EUR/USD
+                            <span class="btn-lbl" id="sell-price">1.08444</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Compliance & Ledger -->
+                <div style="display: flex; flex-direction: column; gap: 28px;">
+                    
+                    <!-- Compliance Auditor Widget -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                XORAS ZDR Compliance Auditor
+                            </h3>
+                        </div>
+
+                        <!-- Interactive Exit Slider -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>RCI Early-Exit Layer Threshold</span>
+                                <span class="slider-val" id="slider-val-lbl">Layer 54</span>
+                            </div>
+                            <input type="range" min="20" max="80" value="54" class="custom-slider" id="exit-slider" oninput="updateExitSlider(this.value)">
+                            
+                            <div class="savings-grid">
+                                <div class="savings-card">
+                                    <span class="savings-title">VRAM Saved</span>
+                                    <span class="savings-value" id="vram-saved">10.40 GB</span>
+                                </div>
+                                <div class="savings-card">
+                                    <span class="savings-title">Latency Saved</span>
+                                    <span class="savings-value" id="latency-saved">32.5%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Scanner Terminal -->
+                        <div class="terminal-box" id="audit-terminal">
+                            <div class="terminal-header">
+                                <span>LIVE SCANNER COMPLIANCE LOGS</span>
+                                <span>ZDR RECEIPT VALID</span>
+                            </div>
+                            <!-- Logs injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Ledger / Trade Feed -->
+                    <div class="panel" style="flex-grow: 1;">
+                        <div class="panel-header">
+                            <h3 class="panel-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
+                                Real-Time Trade Ledger
+                            </h3>
+                        </div>
+                        <div class="transaction-list" id="ledger-list">
+                            <!-- Entries injected dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Scripting for live interaction -->
+    <script>
+        // Set initial global pricing
+        let currentPrice = 1.08450;
+        let btcPrice = 94284.20;
+        
+        // Generate mock candlesticks array
+        let chartData = [];
+        for (let i = 0; i < 20; i++) {
+            let change = (Math.random() - 0.5) * 0.0006;
+            let open = currentPrice - change;
+            let close = currentPrice + change;
+            let high = Math.max(open, close) + Math.random() * 0.0002;
+            let low = Math.min(open, close) - Math.random() * 0.0002;
+            chartData.push({ open, close, high, low });
+        }
+
+        // Generate dynamic candlesticks inside SVG
+        function renderChart() {
+            const svg = document.getElementById('trading-chart');
+            svg.innerHTML = ''; // Clear SVG
+            
+            const w = 800;
+            const h = 360;
+            const len = chartData.length;
+            const paddingLeft = 40;
+            const paddingRight = 40;
+            const innerW = w - paddingLeft - paddingRight;
+            const colW = innerW / len;
+
+            // Find min/max in current dataset to auto-scale y axis
+            let minVal = Math.min(...chartData.map(d => d.low));
+            let maxVal = Math.max(...chartData.map(d => d.high));
+            let spread = maxVal - minVal;
+            
+            // Add safety spread margin
+            minVal -= spread * 0.1;
+            maxVal += spread * 0.1;
+            spread = maxVal - minVal;
+
+            function scaleY(val) {
+                return h - ((val - minVal) / spread) * (h - 60) - 30;
+            }
+
+            // Draw line overlay representing real-time price trend
+            let pathD = "";
+
+            chartData.forEach((d, idx) => {
+                const cx = paddingLeft + (idx * colW) + (colW / 2);
+                const cy = scaleY(d.close);
+                
+                if (idx === 0) {
+                    pathD = `M ${cx} ${cy}`;
+                } else {
+                    pathD += ` L ${cx} ${cy}`;
+                }
+
+                // Determine trend color
+                const color = d.close >= d.open ? 'var(--green)' : 'var(--magenta)';
+                const glow = d.close >= d.open ? 'var(--green-glow)' : 'var(--magenta-glow)';
+
+                // Draw high/low wicks
+                const wick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                wick.setAttribute('x1', cx);
+                wick.setAttribute('y1', scaleY(d.high));
+                wick.setAttribute('x2', cx);
+                wick.setAttribute('y2', scaleY(d.low));
+                wick.setAttribute('stroke', color);
+                wick.setAttribute('stroke-width', '1.5');
+                svg.appendChild(wick);
+
+                // Draw candle body
+                const candleY = Math.min(scaleY(d.open), scaleY(d.close));
+                const candleH = Math.max(2, Math.abs(scaleY(d.open) - scaleY(d.close)));
+                
+                const body = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                body.setAttribute('x', cx - (colW * 0.3));
+                body.setAttribute('y', candleY);
+                body.setAttribute('width', colW * 0.6);
+                body.setAttribute('height', candleH);
+                body.setAttribute('fill', color);
+                body.setAttribute('rx', '2');
+                body.setAttribute('style', `filter: drop-shadow(0 0 4px ${glow}); cursor: pointer;`);
+                
+                // Add event listeners for hover interaction
+                body.addEventListener('mouseenter', (e) => {
+                    const tooltip = document.getElementById('chart-tooltip');
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = `${e.pageX - 260}px`;
+                    tooltip.style.top = `${e.pageY - 160}px`;
+                    tooltip.innerHTML = `
+                        <div>O: ${d.open.toFixed(5)}</div>
+                        <div>H: ${d.high.toFixed(5)}</div>
+                        <div>L: ${d.low.toFixed(5)}</div>
+                        <div style="color: ${color}">C: ${d.close.toFixed(5)}</div>
+                    `;
+                });
+                
+                body.addEventListener('mouseleave', () => {
+                    document.getElementById('chart-tooltip').style.display = 'none';
+                });
+
+                svg.appendChild(body);
+            });
+
+            // Append trend line under candles for dynamic styling
+            const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            trendLine.setAttribute('d', pathD);
+            trendLine.setAttribute('fill', 'none');
+            trendLine.setAttribute('stroke', 'rgba(0, 242, 255, 0.2)');
+            trendLine.setAttribute('stroke-width', '1');
+            svg.insertBefore(trendLine, svg.firstChild);
+        }
+
+        // Live prices ticker simulations
+        setInterval(() => {
+            let change = (Math.random() - 0.5) * 0.00008;
+            currentPrice += change;
+            
+            // Randomly oscillate BTC
+            btcPrice += (Math.random() - 0.5) * 8.5;
+            
+            // Update HTML tickers
+            document.getElementById('ticker-btc').innerText = btcPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('ticker-eur').innerText = currentPrice.toFixed(5);
+            
+            // Color codes based on ticks
+            document.getElementById('ticker-eur').className = change >= 0 ? "ticker-val up" : "ticker-val down";
+            
+            // Update order trigger indicators
+            document.getElementById('buy-price').innerText = (currentPrice + 0.00006).toFixed(5);
+            document.getElementById('sell-price').innerText = (currentPrice - 0.00006).toFixed(5);
+
+            // Update latest candle values with live ticks
+            let latest = chartData[chartData.length - 1];
+            latest.close = currentPrice;
+            latest.high = Math.max(latest.high, currentPrice);
+            latest.low = Math.min(latest.low, currentPrice);
+            
+            renderChart();
+        }, 1200);
+
+        // Every 30 seconds, push a new candle and shift out oldest
+        setInterval(() => {
+            chartData.shift();
+            chartData.push({
+                open: currentPrice,
+                close: currentPrice,
+                high: currentPrice,
+                low: currentPrice
+            });
+            renderChart();
+        }, 30000);
+
+        // Dynamic SVD Early-Exit Calculations
+        function updateExitSlider(val) {
+            document.getElementById('slider-val-lbl').innerText = `Layer ${val}`;
+            
+            // Recalculate hypothetical metric values
+            let maxLayers = 80;
+            let ratio = (maxLayers - val) / (maxLayers - 20);
+            
+            let vramSavedGb = (ratio * 15.6).toFixed(2);
+            let latencySavedPct = (ratio * 48.0).toFixed(1);
+            
+            document.getElementById('vram-saved').innerText = `${vramSavedGb} GB`;
+            document.getElementById('latency-saved').innerText = `${latencySavedPct}%`;
+
+            // Inject warning into log if threshold is set too low (severe reasoning decay risk)
+            if (val < 35) {
+                logToTerminal(`[WARNING] SVD Early-exit set to highly aggressive Layer ${val}. Reasoning decay threshold exceeded!`, 'warn');
+            } else {
+                logToTerminal(`[CONFIG] Adjusted Early-exit constraint mapping to Layer ${val}. Calculating SVD spectral boundaries...`, 'info');
+            }
+        }
+
+        // Simulated Compliance Logger Terminal logic
+        const logs = [
+            { text: "[SYSTEM] Initializing Verifiable Compliance Agent swarm...", type: 'info' },
+            { text: "[SYSTEM] Local secure enclave attestation signed successfully.", type: 'success' },
+            { text: "[DATABASE] WAL Telemetry ledger running in high-throughput mode.", type: 'info' },
+            { text: "[XORAS] AST parsed code models cleanly loaded inside RISC-V sandbox.", type: 'info' },
+            { text: "[CLARA] De-identification filters fully compiled (PII scrub active).", type: 'success' }
+        ];
+
+        function logToTerminal(text, type = 'normal') {
+            const terminal = document.getElementById('audit-terminal');
+            
+            const line = document.createElement('div');
+            line.className = `terminal-line ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            line.innerText = `[${timestamp}] ${text}`;
+            
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight; // Auto-scroll
+        }
+
+        // Initialize terminal starting output
+        logs.forEach(l => {
+            logToTerminal(l.text, l.type);
+        });
+
+        // Loop to inject periodic mock scanner reports
+        const scannerSentences = [
+            "Running AST structural scan on trading bot compilation scripts...",
+            "Checking variables for static API-key signatures...",
+            "Gradient differential privacy limits checked: Nominal. Entropy = 1.34.",
+            "k-anonymity proof constructed successfully (Disk Writes = 0).",
+            "Signed Attestation JWS compact seal generated cleanly.",
+            "Verifying sequence parameters for adversarial logprobs Outliers..."
+        ];
+
+        setInterval(() => {
+            let phrase = scannerSentences[Math.floor(Math.random() * scannerSentences.length)];
+            logToTerminal(`[AUDIT] ${phrase}`, Math.random() > 0.85 ? 'success' : 'normal');
+        }, 6000);
+
+        // Interactive Buy / Sell Operations
+        let txCounter = 0;
+        function executeTrade(type) {
+            txCounter++;
+            const price = type === 'BUY' ? (currentPrice + 0.00006) : (currentPrice - 0.00006);
+            
+            // 1. Log trade immediately to compliance terminal (Triggering audit)
+            logToTerminal(`[TRADE TRIGGER] Initiating ${type} order at ${price.toFixed(5)}. Requesting attestation seal...`, 'info');
+            
+            setTimeout(() => {
+                logToTerminal(`[CLARA] Client records scrubbed. Hashed address parsed cleanly.`, 'success');
+            }, 300);
+
+            setTimeout(() => {
+                logToTerminal(`[XORAS] zkVM proof generated successfully. Receipt commitment committed to ledger.`, 'success');
+                
+                // 2. Add transaction entry to the real-time dynamic ledger
+                const ledger = document.getElementById('ledger-list');
+                const item = document.createElement('div');
+                item.className = 'transaction-item';
+                item.innerHTML = `
+                    <div class="tx-details">
+                        <span class="tx-type ${type.toLowerCase()}">${type}</span>
+                        <span>0.10 Lots</span>
+                        <span class="tx-price">${price.toFixed(5)}</span>
+                    </div>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green);">[VERIFIED]</span>
+                `;
+                
+                ledger.insertBefore(item, ledger.firstChild); // Prepend to top
+                
+                // Add animated node to our active candlesticks array representing the trade event
+                let latest = chartData[chartData.length - 1];
+                latest.close = price;
+                latest.high = Math.max(latest.high, price);
+                latest.low = Math.min(latest.low, price);
+                renderChart();
+                
+            }, 800);
+        }
+
+        // Initial render execution
+        renderChart();
+    </script>
+</body>
+</html>

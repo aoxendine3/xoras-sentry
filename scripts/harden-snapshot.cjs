@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SNAPSHOT_DIR = '/Users/ajoxendine68/Documents/GitHub/XORAS_SOVEREIGN_CORE_UPGRADE_SNAPSHOT';
+const SNAPSHOT_DIR = '/Users/ajoxendine68/Documents/GitHub/XORAS_INTEGRITY_CORE_UPGRADE_SNAPSHOT';
 const rawData = fs.readFileSync(path.join(SNAPSHOT_DIR, 'snapshot-audit-clean.json'), 'utf8');
 const jsonStart = rawData.indexOf('{');
 const AUDIT_DATA = JSON.parse(rawData.substring(jsonStart));

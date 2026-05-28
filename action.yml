@@ -1,5 +1,5 @@
 name: 'XORAS Sentry Guard'
-description: 'Sovereign environment variable auditing and structural secret detection.'
+description: 'Professional environment variable auditing and structural secret detection.'
 inputs:
   target_path:
     description: 'The directory to scan'

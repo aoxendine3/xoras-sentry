@@ -1,5 +1,12 @@
 {
   "policy_name": "INSTITUTIONAL_CORE_V1",
+  "policy_tones": [
+    "TECHNICAL_ENGLISH",
+    "HONORIFIC_JAPANESE",
+    "COLLABORATIVE_KOREAN",
+    "SOVEREIGN_ARABIC",
+    "COMMUNITY_SPANISH"
+  ],
   "budgets": {
     "performance": {
       "max_latency_drift_percent": 15,

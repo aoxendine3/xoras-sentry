@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORION // X CAMPAIGN PREVIEW - AI DRIFT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030208;
+            --accent: #1da1f2; /* X Blue */
+            --accent-glow: rgba(29, 161, 242, 0.15);
+            --neon-cyan: #00f2ff;
+            --violet: #8a2be2;
+            --text: #f3f1fd;
+            --text-dim: #8b88a5;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 5% 10%, rgba(138, 43, 226, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 95% 90%, rgba(0, 242, 255, 0.08) 0%, transparent 40%);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Premium Glassmorphic Card */
+        .preview-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .preview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--neon-cyan));
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* Custom X Post Mockup */
+        .x-post {
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .x-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .x-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--violet) 0%, var(--neon-cyan) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .x-user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .x-display-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .x-badge {
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.55rem;
+            color: #fff;
+        }
+
+        .x-username {
+            color: #71767b;
+            font-size: 0.85rem;
+        }
+
+        .x-body {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e7e9ea;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+        }
+
+        .x-body a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .x-body a:hover {
+            text-decoration: underline;
+        }
+
+        .x-metrics {
+            padding: 12px 4px;
+            border-top: 1px solid #2f3336;
+            border-bottom: 1px solid #2f3336;
+            display: flex;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #71767b;
+            font-family: inherit;
+        }
+
+        .x-metrics strong {
+            color: #e7e9ea;
+        }
+
+        .x-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 12px;
+            color: #71767b;
+            font-size: 0.9rem;
+        }
+
+        .x-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            color: inherit;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .x-action-btn:hover.btn-reply { color: var(--accent); }
+        .x-action-btn:hover.btn-rt { color: #00ba7c; }
+        .x-action-btn:hover.btn-like { color: #f91880; }
+        .x-action-btn.active.btn-like { color: #f91880; font-weight: bold; }
+        .x-action-btn.active.btn-rt { color: #00ba7c; font-weight: bold; }
+
+        /* Telemetry Monitor Panel */
+        .telemetry-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .telemetry-title {
+            color: var(--neon-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+        }
+
+        .telemetry-val {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .telemetry-val.success {
+            color: var(--neon-cyan);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--violet));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .btn-interact {
+            width: 100%;
+            background: linear-gradient(135deg, var(--violet) 0%, var(--accent) 100%);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            padding: 12px;
+            cursor: pointer;
+            transition: filter 0.3s ease, transform 0.2s ease;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        .btn-interact:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .status-feed {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            height: 150px;
+            padding: 12px;
+            overflow-y: auto;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+            margin-top: 15px;
+        }
+
+        .feed-line {
+            margin-bottom: 6px;
+        }
+        .feed-line.highlight {
+            color: var(--neon-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Left Column: The Interactive Post Mockup -->
+        <div class="preview-card">
+            <div class="card-title">
+                <div class="pulse-dot"></div>
+                <span>☄️ LIVE OUTBOUND PREVIEW: X CAMPAIGN</span>
+            </div>
+            
+            <div class="x-post">
+                <div class="x-header">
+                    <div class="x-avatar">☄️</div>
+                    <div class="x-user-info">
+                        <div class="x-display-name">Orion // Swarm Sentinel <div class="x-badge">✓</div></div>
+                        <div class="x-username">@orion_sentinel</div>
+                    </div>
+                </div>
+                <div class="x-body" id="postBody">Loading active campaign post...</div>
+                
+                <div class="x-metrics">
+                    <span><strong id="retweetsCount">245</strong> Retweets</span>
+                    <span><strong id="likesCount">1.2K</strong> Likes</span>
+                </div>
+                
+                <div class="x-actions">
+                    <button class="x-action-btn btn-reply">💬 18</button>
+                    <button class="x-action-btn btn-rt" id="rtBtn" onclick="toggleRT()">🔁 <span id="rtTxt">Retweet</span></button>
+                    <button class="x-action-btn btn-like" id="likeBtn" onclick="toggleLike()">❤️ <span id="likeTxt">Like</span></button>
+                    <button class="x-action-btn">🔗 Share</button>
+                </div>
+            </div>
+
+            <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; text-align: center;">This post is constructed programmatically, sanitized for k-anonymity compliance, and cryptographically attested in a standalone RS256 JWS envelope prior to outreach deployment.</p>
+        </div>
+
+        <!-- Right Column: Interactive Drift Simulator -->
+        <div class="preview-card">
+            <div class="card-title">
+                <div class="pulse-dot" style="background-color: var(--violet); box-shadow: 0 0 10px var(--violet);"></div>
+                <span>⚙️ COGNITIVE DRIFT SYSTEMS WATCH</span>
+            </div>
+            
+            <div class="telemetry-card">
+                <div class="telemetry-title">
+                    <span>SVD DRIFT TELEMETRY</span>
+                    <span id="driftPercent" style="color: var(--neon-cyan);">0.00%</span>
+                </div>
+                
+                <div class="telemetry-row">
+                    <span>Baseline Stylistic Anchors</span>
+                    <span class="telemetry-val">SVD_BASELINE_CORE</span>
+                </div>
+                <div class="telemetry-row">
+                    <span>Stateless Context Frame</span>
+                    <span class="telemetry-val success">FLUSHED</span>
+                </div>
+                <div class="telemetry-row">
+                    <span>Dynamic Reboot Threshold</span>
+                    <span class="telemetry-val" style="color: #ff0055;">2.50%</span>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="driftBar"></div>
+                </div>
+
+                <button class="btn-interact" onclick="simulateEngagement()">Simulate Outbound Post Drift</button>
+                
+                <div class="status-feed" id="statusFeed">
+                    <div class="feed-line">[SYSTEM] Swarm Sentinel active and anchored.</div>
+                    <div class="feed-line">[SYSTEM] Cryptographic proving keys generated.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const threadText = `1/3 AI Semantic Drift is a quiet killer for long-running models. Over deep threads, context bloats, memory degrades, and behavior anchors drift. 
+
+How can we prevent this without bloating host constraints or leaking proprietary variables? 🧵👇
+
+2/3 The solution lies in Stateless Context Bounding & Stylistic Vector Gates:
+1. Context Flushing: Strictly bounding conversation frames and stripping histories.
+2. Low-Rank Style checks: Comparing prompt vector embeddings against a static baseline Singular Value Decomposition (SVD) matrix.
+
+3/3 At @integrity_sentry, our enclaves use a strict 2.5% SVD drift gate. If the vector drifts past this threshold, the runtime dynamically kills the active cache and executes a clean reboot back to its static manifest baseline. No drift, zero leakage. 🔒⚖️`;
+
+        document.getElementById('postBody').innerText = threadText;
+
+        let liked = false;
+        let rted = false;
+        let likes = 1205;
+        let rts = 245;
+        let driftValue = 0.00;
+
+        function toggleLike() {
+            liked = !liked;
+            const btn = document.getElementById('likeBtn');
+            if (liked) {
+                likes++;
+                btn.classList.add('active');
+                document.getElementById('likeTxt').innerText = 'Liked';
+            } else {
+                likes--;
+                btn.classList.remove('active');
+                document.getElementById('likeTxt').innerText = 'Like';
+            }
+            document.getElementById('likesCount').innerText = likes > 999 ? (likes/1000).toFixed(1) + 'K' : likes;
+            logFeed(`[USER] Post liked. Metric updated.`);
+        }
+
+        function toggleRT() {
+            rted = !rted;
+            const btn = document.getElementById('rtBtn');
+            if (rted) {
+                rts++;
+                btn.classList.add('active');
+                document.getElementById('rtTxt').innerText = 'Retweeted';
+            } else {
+                rts--;
+                btn.classList.remove('active');
+                document.getElementById('rtTxt').innerText = 'Retweet';
+            }
+            document.getElementById('retweetsCount').innerText = rts;
+            logFeed(`[USER] Post retweeted. Metric updated.`);
+        }
+
+        function logFeed(msg) {
+            const feed = document.getElementById('statusFeed');
+            const line = document.createElement('div');
+            line.className = 'feed-line';
+            line.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            feed.appendChild(line);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function simulateEngagement() {
+            driftValue += 0.45;
+            const percent = document.getElementById('driftPercent');
+            const bar = document.getElementById('driftBar');
+            
+            if (driftValue >= 2.5) {
+                percent.innerText = driftValue.toFixed(2) + '%';
+                bar.style.width = '100%';
+                logFeed(`⚠️ Stylistic drift reached ${driftValue.toFixed(2)}%! reboot gate activated.`);
+                
+                setTimeout(() => {
+                    logFeed(`[REBOOT] Dynamic cache flush initiated...`);
+                }, 600);
+                
+                setTimeout(() => {
+                    driftValue = 0.00;
+                    percent.innerText = '0.00%';
+                    bar.style.width = '0%';
+                    logFeed(`✔ Swarm memory successfully restored to clean baseline.`);
+                }, 1500);
+            } else {
+                percent.innerText = driftValue.toFixed(2) + '%';
+                bar.style.width = `${(driftValue / 2.5) * 100}%`;
+                logFeed(`[DRIFT] Embeddings drift checked: ${driftValue.toFixed(2)}%`);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -62,5 +62,5 @@ async function runCycle() {
     }
 }
 
-console.log(`🏛️ VANGUARD SOVEREIGN AGENT ACTIVE`);
+console.log(`🏛️ VANGUARD COMPLIANCE AGENT ACTIVE`);
 runCycle();

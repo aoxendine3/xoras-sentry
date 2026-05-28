@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
           // 2. Dispatch Email Delivery via Resend
           if (process.env.RESEND_API_KEY) {
-            const { data, error } = await resend.emails.send({
+            const { error } = await resend.emails.send({
               from: 'XORAS Sentry <support@xoras.com>', // Update with your verified Resend domain
               to: [customerEmail],
               subject: 'Your XORAS Sentry Institutional License Key',
@@ -57,8 +57,8 @@ export async function POST(req: Request) {
                   <p style="color: #9CA3AF; line-height: 1.6;">Thank you for securing your infrastructure with XORAS Sentry. Your institutional license has been provisioned.</p>
                   
                   <div style="background-color: #111827; padding: 20px; border-radius: 6px; margin: 30px 0; border-left: 4px solid #F59E0B;">
-                    <p style="color: #9CA3AF; margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase;">Your License Key</p>
-                    <code style="color: #FCD34D; font-size: 18px; font-weight: bold; letter-spacing: 1px;">${licenseKey}</code>
+                     <p style="color: #9CA3AF; margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase;">Your License Key</p>
+                     <code style="color: #FCD34D; font-size: 18px; font-weight: bold; letter-spacing: 1px;">${licenseKey}</code>
                   </div>
 
                   <h3 style="color: #F3F4F6;">Next Steps:</h3>

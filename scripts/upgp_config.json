@@ -1,0 +1,9 @@
+{
+  "maxRetries": 3,
+  "baseDelayMs": 800,
+  "failureThreshold": 0.25,
+  "maxConcurrentAgents": 4,
+  "eventsPerAgent": 15,
+  "globalSetup": ["mkdir -p ./tmp/stress"],
+  "globalTeardown": ["rm -rf ./tmp/stress"]
+}

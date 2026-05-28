@@ -18,7 +18,7 @@ The following items have been initialized in the codebase but await full integra
 *   **tRPC Handshake Layer**: `packages/api` - Type definitions and routers staged; awaiting runtime verification. **[INITIALIZED]**
 *   **Persistence Layer**: `packages/db` - Drizzle schema and Neon drivers initialized; awaiting live database uplink. **[INITIALIZED]**
 *   **Domain & DNSSEC**: `xoras.com` - Cloudflare configuration staged; awaiting nameserver propagation and DS record verification. **[STAGED]**
-*   **Hosting**: Cloudflare Pages - Deployment pipeline ready; awaiting DNS finality. **[STAGED]**
+*   **Hosting**: Cloudflare Pages - Deployment pipeline ready; awaiting DNS resolution. **[STAGED]**
 
 ## 3. Technology Stack Baseline
 *   **Core**: Node.js 24.x / TypeScript.

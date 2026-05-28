@@ -1,7 +1,7 @@
 # 🛡️ SECURITY MODEL: Bounded Determinism (v1.0_Ω)
 
 ## 1. Philosophy: Integrity over Hyperbole
-The `integrity-sentry-core` is built on the principle of **Deterministic Scoped-Detection**. We do not claim "Absolute Finality." Instead, we provide a repeatable, structurally-aware audit of environment variable usage within a defined and evolving rule set.
+The `integrity-sentry-core` is built on the principle of **Deterministic Scoped-Detection**. We do not claim "Absolute Resolution." Instead, we provide a repeatable, structurally-aware audit of environment variable usage within a defined and evolving rule set.
 
 ## 2. Detection Scope
 ### What we Detect (Deterministic)

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XORAS Sentry // Interactive E2E Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --border: #1a1a1a;
+            --text: #ffffff;
+            --text-dim: #888888;
+            --accent: #d4af37; /* Luxury Gold */
+            --accent-glow: rgba(212, 175, 55, 0.25);
+            --neon-cyan: #00f2ff;
+            --neon-cyan-glow: rgba(0, 242, 255, 0.2);
+            --red: #ff3b30;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at top right, rgba(212, 175, 55, 0.05) 0%, transparent 60%),
+                              radial-gradient(circle at bottom left, rgba(0, 242, 255, 0.03) 0%, transparent 60%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Top Nav */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 40px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-glyph {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .badge-live {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            margin-left: 24px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        /* Showcase Grid */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Column Styles */
+        .showcase-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--card-radius);
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .showcase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--neon-cyan));
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        /* Interactive Checkout Simulator */
+        .tier-picker {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .tier-option {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tier-option:hover, .tier-option.active {
+            border-color: var(--accent);
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .tier-name {
+            font-size: 12px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .tier-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: all 0.2s ease;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--accent);
+        }
+
+        /* Success Flow Card */
+        .key-generator-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--glass-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 32px;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .generated-key-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .generated-key {
+            flex: 1;
+            padding: 12px;
+            background: #000;
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            color: var(--accent);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .btn-copy {
+            padding: 0 16px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .btn-copy:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Command Center Simulator Frame */
+        .command-center-simulator {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            height: 520px;
+            background: #020203;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .sim-header {
+            background: #0a0a0f;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sim-body {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            height: calc(100% - 46px);
+        }
+
+        .sim-sidebar {
+            background: #050508;
+            border-right: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sim-nav-label {
+            font-size: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sim-nav-item {
+            font-size: 12px;
+            color: var(--text-dim);
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .sim-nav-item.active {
+            background: var(--glass);
+            color: #fff;
+        }
+
+        .sim-layouts-nav {
+            display: none;
+            animation: slideDown 0.3s ease forwards;
+        }
+
+        .sim-layouts-nav .sim-nav-item {
+            color: var(--neon-cyan);
+            border-left: 2px solid var(--neon-cyan);
+            border-radius: 0;
+            padding-left: 12px;
+            margin-bottom: 4px;
+        }
+
+        .sim-layouts-nav .sim-nav-item:hover {
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        .sim-workspace {
+            padding: 24px;
+            overflow-y: auto;
+            background: #020203;
+        }
+
+        .sim-status-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: auto;
+            font-size: 11px;
+        }
+
+        .sim-status-box.unlocked {
+            border-color: var(--accent);
+            background: rgba(212,175,55,0.03);
+        }
+
+        .sim-status-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .sim-status-title.active {
+            color: var(--accent);
+        }
+
+        /* Unlock overlay inside simulated window */
+        .unlock-form-card {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .unlock-input-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .unlock-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Console Logs */
+        .sim-console {
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            height: 120px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            color: var(--neon-cyan);
+            padding: 12px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { height: 0; opacity: 0; }
+            to { height: auto; opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="brand">
+            <div class="logo-glyph">XORAS // SHOWCASE</div>
+            <div class="badge-live"><div style="display:inline-block; width:6px; height:6px; background:#d4af37; border-radius:50%; margin-right:6px; box-shadow:0 0 6px #d4af37;"></div>E2E VERIFICATION GATEWAY</div>
+        </div>
+        <div class="nav-links">
+            <a href="LANDING_PAGE.html">Storefront Home</a>
+            <a href="index.html">Main Command Center</a>
+            <a href="LAUNCH_DASHBOARD.html">Launch Bridge</a>
+        </div>
+    </header>
+
+    <div class="showcase-grid">
+        <!-- Purchase Simulator Card -->
+        <div class="showcase-card">
+            <h2>1. Buy & Acquire License</h2>
+            <p class="subtitle">Simulate purchasing an institutional tier on Gumroad to obtain your license key.</p>
+            
+            <div class="tier-picker">
+                <div class="tier-option" id="opt-basic" onclick="selectTier('Basic', 19)">
+                    <div class="tier-name">BASIC</div>
+                    <div class="tier-price">$19</div>
+                </div>
+                <div class="tier-option active" id="opt-pro" onclick="selectTier('Pro', 49)">
+                    <div class="tier-name">PRO</div>
+                    <div class="tier-price">$49</div>
+                </div>
+                <div class="tier-option" id="opt-ent" onclick="selectTier('Enterprise', 199)">
+                    <div class="tier-name">ENTERPRISE</div>
+                    <div class="tier-price">$199</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Simulated Card Holder</label>
+                <input type="text" value="Anthony Oxendine" placeholder="Cardholder Name">
+            </div>
+
+            <div class="form-group">
+                <label>Billing Email Address</label>
+                <input type="email" value="aoxendine@xoras.io" placeholder="Email Address">
+            </div>
+
+            <button class="btn-checkout" onclick="executeSimulatedCheckout()">⚡ RUN SIMULATED CHECKOUT</button>
+
+            <div class="key-generator-card" id="key-card">
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#fff; font-weight:bold; margin-bottom:8px;">✓ GUMROAD PURCHASE COMPLETED</div>
+                <div style="font-size:12px; color:var(--text-dim); margin-bottom:12px;">Your institutional license key has been cryptographically generated:</div>
+                <div class="generated-key-wrapper">
+                    <div class="generated-key" id="target-key-display">GUMROAD-XXXX-XXXX-XXXX</div>
+                    <button class="btn-copy" onclick="copySimulatedKey()">COPY</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Command Center Unlock Card -->
+        <div class="showcase-card">
+            <h2>2. Activate in Command Center</h2>
+            <p class="subtitle">Verify the license key on-the-fly to unlock premium CRT, glass, and macOS layout assets.</p>
+
+            <div class="command-center-simulator">
+                <!-- Simulator Header -->
+                <div class="sim-header">
+                    <div style="font-size:12px; font-family:'IBM Plex Mono', monospace; font-weight:bold; color:var(--accent);">XORAS // COMMAND CONTROL</div>
+                    <div style="font-size:11px; font-family:'IBM Plex Mono', monospace; color:var(--text-dim);">MEM_VAULT: aether_brain.sqlite</div>
+                </div>
+
+                <!-- Simulator Body -->
+                <div class="sim-body">
+                    <div class="sim-sidebar">
+                        <div class="sim-nav-label">Prospecting</div>
+                        <div class="sim-nav-item active">📊 Overview</div>
+                        
+                        <!-- Dynamic layout switchers -->
+                        <div class="sim-layouts-nav" id="sim-layouts-list">
+                            <div class="sim-nav-label" style="margin: 8px 0 4px 0;">Premium Layouts</div>
+                            <a class="sim-nav-item" href="http://localhost:8090/index_terminal_retro.html" target="_blank">📟 Retro CRT</a>
+                            <a class="sim-nav-item" href="http://localhost:8090/index_neo_glass.html" target="_blank">🔮 Neo-Glass</a>
+                            <a class="sim-nav-item" href="http://localhost:8090/index_fluid_macos.html" target="_blank">🖥️ OS X Desktop</a>
+                        </div>
+
+                        <!-- Sidebar dynamic license box -->
+                        <div class="sim-status-box" id="sim-sidebar-license">
+                            <div class="sim-status-title">✓ FREE SANDBOX</div>
+                            <div style="color:var(--text-dim);">Premium layout variants are currently locked.</div>
+                        </div>
+                    </div>
+
+                    <!-- Simulator main viewport -->
+                    <div class="sim-workspace" id="sim-main-view">
+                        <div class="unlock-form-card" id="sim-unlocked-success-view" style="display:none; text-align:center;">
+                            <div style="font-size:36px; margin-bottom:12px;">🎉</div>
+                            <h3 style="font-family:'IBM Plex Mono',monospace; color:var(--accent); margin-bottom:8px;">PRO LICENSE ACTIVATED</h3>
+                            <p style="font-size:12px; color:var(--text-dim); margin-bottom:16px;">V8 script sandboxing & MT4 Nexus layout engines are fully operational.</p>
+                            <a href="http://localhost:8090/index.html" target="_blank" class="btn-checkout" style="padding:10px 20px; font-size:12px; text-decoration:none; display:inline-block; width:auto;">📊 OPEN NEXUS WEBTRADER</a>
+                        </div>
+
+                        <div class="unlock-form-card" id="sim-locked-view">
+                            <h3 style="font-size:16px; margin-bottom:8px;">Enter Institutional License Key</h3>
+                            <p style="font-size:12px; color:var(--text-dim);">Unlocks raw MT4 Nexus WebTrader databases, AST sweeps, and executive styling.</p>
+                            
+                            <div class="unlock-input-group">
+                                <input type="text" id="sim-license-key-input" placeholder="GUMROAD-XXXX-XXXX-XXXX">
+                                <button class="unlock-btn" onclick="verifySimulatedKey()">VERIFY</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulated Terminal Logs -->
+            <div class="sim-console" id="sim-console-output">
+                <div>[SYSTEM] XORAS Command Shell initialized. Free sandbox active.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let activeTier = 'Pro';
+    let generatedKey = '';
+
+    function selectTier(tier, price) {
+        activeTier = tier;
+        document.querySelectorAll('.tier-option').forEach(opt => opt.classList.remove('active'));
+        if(tier === 'Basic') document.getElementById('opt-basic').classList.add('active');
+        if(tier === 'Pro') document.getElementById('opt-pro').classList.add('active');
+        if(tier === 'Enterprise') document.getElementById('opt-ent').classList.add('active');
+        playSynth(400, 0.05, 'triangle');
+    }
+
+    function executeSimulatedCheckout() {
+        playSynth(600, 0.05, 'sine');
+        const keyCard = document.getElementById('key-card');
+        const keyDisplay = document.getElementById('target-key-display');
+        
+        // Dynamic key generation mimicking Gumroad SHA-256 formatting
+        const randomHex = Array.from({length: 4}, () => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
+        generatedKey = `GUMROAD-${activeTier.toUpperCase()}-${randomHex}-2026`;
+        
+        keyDisplay.innerText = generatedKey;
+        keyCard.style.display = 'block';
+        
+        // Auto pre-fill key in step 2 input for super smooth user experience!
+        document.getElementById('sim-license-key-input').value = generatedKey;
+        
+        logSimConsole(`Checkout completed successfully. ${activeTier.toUpperCase()} license generated: ${generatedKey}`);
+    }
+
+    function copySimulatedKey() {
+        if (!generatedKey) return;
+        navigator.clipboard.writeText(generatedKey);
+        playSynth(800, 0.04, 'sine');
+        alert("License key copied to clipboard! Paste it into the Command Center verification box on the right.");
+    }
+
+    function verifySimulatedKey() {
+        const inputKey = document.getElementById('sim-license-key-input').value.trim();
+        if (!inputKey) {
+            alert("Please paste the generated license key.");
+            return;
+        }
+
+        logSimConsole(`Validating license signature [${inputKey.substring(0, 15)}...] against Gumroad API...`);
+        playSynth(700, 0.05, 'sine');
+
+        setTimeout(() => {
+            // Unlocked state update
+            document.getElementById('sim-locked-view').style.display = 'none';
+            document.getElementById('sim-unlocked-success-view').style.display = 'block';
+            
+            const layoutsNav = document.getElementById('sim-layouts-list');
+            layoutsNav.style.display = 'block';
+
+            const sidebarLicense = document.getElementById('sim-sidebar-license');
+            sidebarLicense.className = "sim-status-box unlocked";
+            sidebarLicense.innerHTML = `
+                <div class="sim-status-title active">✓ PRO UNLOCKED</div>
+                <div style="color:var(--text-dim); font-size:10px;">Gumroad: <code>${inputKey.substring(0, 11)}...</code></div>
+            `;
+
+            logSimConsole("✨ GUMROAD KEY VERIFIED. MT4 Nexus WebTrader compile hooks unlocked!", "cyan");
+            playSynth(880, 0.1, 'sine');
+            setTimeout(() => playSynth(1100, 0.15, 'sine'), 100);
+        }, 1200);
+    }
+
+    function logSimConsole(msg, type = 'normal') {
+        const consoleEl = document.getElementById('sim-console-output');
+        const log = document.createElement('div');
+        log.style.color = type === 'cyan' ? 'var(--neon-cyan)' : 'var(--text-dim)';
+        log.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        consoleEl.appendChild(log);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function playSynth(freq, duration, type='sine') {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch(e) {}
+    }
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 /**
  * XORAS Principal Signer (Institutional Standard)
- * Purpose: Provides cryptographically verifiable signatures for Audit Finality reports.
+ * Purpose: Provides cryptographically verifiable signatures for Audit Resolution reports.
  */
 
 class PrincipalSigner {

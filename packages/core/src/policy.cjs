@@ -70,7 +70,7 @@ function getSecretPatterns() {
         { name: 'Kyutai', regex: /kyutai-[a-zA-Z0-9]{24}/ },
         { name: 'Falcon', regex: /falcon-[a-zA-Z0-9]{28}/ },
         { name: 'SEALION', regex: /sealion-[a-zA-Z0-9]{24}/ },
-        { name: 'Generic', regex: /(?:key|secret|token|password|auth|api|id)['"]?\s*[:=]\s*['"]([a-zA-Z0-9_\-\.]{20,})['"]/i }
+        { name: 'Generic', regex: /(?:key|secret|token|password|auth|api|id)['"]?\s*[:=]\s*['"]([a-zA-Z0-9_\-.]{20,})['"]/i }
     ];
 
     const config = loadConfig();
@@ -85,16 +85,16 @@ function getSecretPatterns() {
                 }));
                 return [...defaultPatterns, ...custom];
             }
-        } catch (e) {}
+        } catch (e) { /* ignore parsing errors */ }
     }
     return defaultPatterns;
 }
 
 /**
- * Multi-Jurisdictional Sovereign Zoning Audit.
- * Gates cross-border data leakage and unencrypted outbound telemetry across global sovereign boundaries (EU AI Act, UAE Data Laws, Singapore PDPA).
+ * Multi-Jurisdictional Compliance Zoning Audit.
+ * Gates cross-border data leakage and unencrypted outbound telemetry across global regulatory boundaries (EU AI Act, UAE Data Laws, Singapore PDPA).
  */
-function auditSovereignZone(content, relativePath) {
+function auditComplianceZone(content, relativePath) {
     const violations = [];
     const nonCompliantEndpoints = [
         { name: 'Unencrypted_Data_Exfil', regex: /http:\/\/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/i, zone: 'Global_Zero_Trust' }
@@ -105,7 +105,7 @@ function auditSovereignZone(content, relativePath) {
         if (ep.regex.test(content)) {
             violations.push({
                 file: relativePath,
-                violation: `Non-sovereign endpoint access detected (${ep.name})`,
+                violation: `Non-compliant endpoint access detected (${ep.name})`,
                 requiredZone: ep.zone
             });
         }
@@ -113,4 +113,4 @@ function auditSovereignZone(content, relativePath) {
     return violations;
 }
 
-module.exports = { getIgnoreList, loadConfig, classify, getSecretPatterns, auditSovereignZone };
+module.exports = { getIgnoreList, loadConfig, classify, getSecretPatterns, auditComplianceZone };
