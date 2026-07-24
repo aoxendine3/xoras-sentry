@@ -8,7 +8,6 @@ import { Redis } from '@upstash/redis';
  * Nuance: Combined JWT Auth + Upstash Rate Limiting at the Edge.
  */
 
-export const runtime = 'experimental-edge';
 
 // Nuance: Initialize Upstash Redis for global rate limiting
 const redis = new Redis({
@@ -32,7 +31,7 @@ const authRatelimit = new Ratelimit({
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret-for-dev');
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'anonymous';
   
