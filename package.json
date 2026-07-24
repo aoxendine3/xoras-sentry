@@ -15,7 +15,8 @@
     "audit": "npm run audit --workspace=packages/cli",
     "clean": "npm run audit --workspace=packages/cli -- --janitor",
     "ui": "npm run start --workspace=packages/ui",
-    "prepare": "bash scripts/install_hook.sh",
+
+
     "build": "npm run build --workspace=apps/web"
   },
   "author": "Anthony Oxendine",

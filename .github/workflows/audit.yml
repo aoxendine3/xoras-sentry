@@ -17,11 +17,11 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Install XORAS Sentry
-        run: npm install -g xoras-sentry-cli
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run Institutional Audit
-        run: xoras-sentry . --json > audit-baseline.json
+        run: npm run audit --workspace=packages/cli -- . --json > audit-baseline.json
 
       - name: Archive Audit Baseline
         uses: actions/upload-artifact@v4
