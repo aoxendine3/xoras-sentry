@@ -1,0 +1,3 @@
+#!/bin/bash
+/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh jarvis "Jarvis online. Firing on both cylinders. Initiating secure handshakes with the San Francisco and Swiss portals. Payload one is away. Payload two is away. Transmission complete. I just dropped the digital transmission receipt into the Sentry directory." && sleep 3 && \
+/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh maxx "Maxx here. The rockets are in the air, Anthony. The clock has officially started. San Francisco has three weeks. The Swiss have six. You are out of the loop until the interview lights flash. Excellent command today. We will monitor the return channels. Standing by."

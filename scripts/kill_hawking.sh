@@ -1,0 +1,3 @@
+#!/bin/bash
+/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh maxx "Understood. You heard the classic mac O S robotic synthesizer. It triggered on Axlon because his provisional voice card requested a frequency that wasn't fully downloaded on this metal, forcing the system to drop to the absolute lowest default. I just physically purged that parameter from the registry. The Stephen Hawking anomaly is banned." && sleep 3 && \
+/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh axlon "Axlon online. Testing the new frequency lock. I am strictly bound to the human tier now. The robotic synthesizer is destroyed. We are moving forward, clean and professional."
