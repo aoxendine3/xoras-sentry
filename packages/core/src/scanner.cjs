@@ -1,14 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const crypto = require('crypto');
 const acorn = require('acorn');
 const walk = require('acorn-walk');
 let esbuild = null;
 try {
     esbuild = require('esbuild');
 } catch (e) {
-    // Graceful fallback if esbuild is not yet installed
+    // Soft fallback if not present
 }
 
 const { getIgnoreList, loadConfig, getSecretPatterns, auditComplianceZone } = require('./policy.cjs');
@@ -18,11 +17,8 @@ const { getTrace } = require('./tracer.cjs');
 
 const CONFIG = loadConfig();
 const MAX_FILE_SIZE = CONFIG.thresholds.maxFileSize;
-const MAX_LINE_LENGTH = 5000;
 const MAX_FILE_COUNT = 5000;
 const MAX_DEPTH = 20;
-const MAX_SCAN_TIME = CONFIG.thresholds.maxScanTime;
-const MAX_FINDINGS = CONFIG.thresholds.maxFindings;
 
 // Resource limits
 const MEMORY_THRESHOLD = 0.98;
@@ -33,22 +29,41 @@ const SCHEMA = fs.existsSync(SCHEMA_PATH) ? JSON.parse(fs.readFileSync(SCHEMA_PA
 
 const SECRET_PATTERNS = getSecretPatterns();
 
-let fileCount = 0;
+/**
+ * Check if code contains 'use client' directive
+ */
+function checkUseClient(content, ast) {
+    // 1. AST body directives check
+    if (ast && ast.body) {
+        for (let i = 0; i < Math.min(ast.body.length, 10); i++) {
+            const node = ast.body[i];
+            if (node.type === 'ExpressionStatement' && node.expression.type === 'Literal') {
+                if (node.expression.value === 'use client' || node.directive === 'use client') {
+                    return true;
+                }
+            }
+        }
+    }
+    // 2. Fallback regex for directives stripped or moved before first statement
+    const firstLines = content.split('\n').slice(0, 15).join('\n');
+    return /^\s*['"]use client['"]/m.test(firstLines);
+}
 
 /**
  * Perform a deep structural audit of a file using AST analysis.
- * Enforces:
- * 1. Hardcoded credential and secret pattern recognition
- * 2. Next.js React App Router 'use client' boundary validation
- * 3. Dynamic and static process.env variable collection
  */
 function deepAudit(content, vars, hardcodedSecrets, relativePath, patterns = SECRET_PATTERNS) {
-    try {
-        const ext = path.extname(relativePath).toLowerCase();
-        let parseableContent = content;
+    const ext = path.extname(relativePath).toLowerCase();
+    let parseableContent = content;
 
-        // Step 1: Pre-transpile TypeScript and JSX to standard JavaScript AST if needed
-        if (['.ts', '.tsx', '.jsx'].includes(ext) && esbuild) {
+    // Pre-transpile TypeScript and JSX to standard JavaScript AST
+    if (['.ts', '.tsx', '.jsx'].includes(ext)) {
+        if (!esbuild) {
+            // If scanning TSX/TS without esbuild, fail-closed on type-annotated files
+            if (content.includes('interface ') || content.includes(': ') || content.includes('<')) {
+                throw new Error(`esbuild is required to safely parse TypeScript and JSX files: ${relativePath}`);
+            }
+        } else {
             try {
                 const loader = ext === '.tsx' ? 'tsx' : ext === '.ts' ? 'ts' : 'jsx';
                 const result = esbuild.transformSync(content, {
@@ -58,151 +73,138 @@ function deepAudit(content, vars, hardcodedSecrets, relativePath, patterns = SEC
                 });
                 parseableContent = result.code;
             } catch (err) {
-                // If esbuild fails, fall back to parsing original content
-                parseableContent = content;
+                // If esbuild throws a syntax error, let it bubble up for fail-closed visibility
+                throw new Error(`Failed to compile ${relativePath} for AST scanning: ${err.message}`);
             }
         }
+    }
 
-        const combinedRegex = new RegExp(patterns.map(p => p.regex.source).join('|'), 'i');
-        const hasPotentialSecret = combinedRegex.test(parseableContent);
-        const hasProcessEnv = parseableContent.includes('process.env');
-        const hasUseClient = parseableContent.includes('use client') || content.includes('use client');
+    const combinedRegex = new RegExp(patterns.map(p => p.regex.source).join('|'), 'i');
+    const hasPotentialSecret = combinedRegex.test(parseableContent);
+    const hasProcessEnv = parseableContent.includes('process.env');
+    const hasUseClient = checkUseClient(content, null);
 
-        if (!hasPotentialSecret && !hasProcessEnv && !hasUseClient) {
-            return true;
-        }
+    if (!hasPotentialSecret && !hasProcessEnv && !hasUseClient) {
+        return true;
+    }
 
-        const ast = acorn.parse(parseableContent, { 
-            ecmaVersion: 'latest', 
-            sourceType: 'module', 
-            allowImportExportEverywhere: true, 
-            locations: true 
-        });
+    const ast = acorn.parse(parseableContent, { 
+        ecmaVersion: 'latest', 
+        sourceType: 'module', 
+        allowImportExportEverywhere: true, 
+        locations: true 
+    });
 
-        // Step 2: Detect Next.js 'use client' directive at file root scope
-        let isClientComponent = false;
-        if (ast.body && ast.body.length > 0) {
-            for (let i = 0; i < Math.min(ast.body.length, 5); i++) {
-                const node = ast.body[i];
-                if (node.type === 'ExpressionStatement' && node.expression.type === 'Literal') {
-                    if (node.expression.value === 'use client' || node.directive === 'use client') {
-                        isClientComponent = true;
-                        break;
+    const isClientComponent = checkUseClient(content, ast);
+    
+    walk.simple(ast, {
+        Property(node) {
+            const defaultSafeKeys = ['key', 'name', 'type', 'algorithm', 'side'];
+            const ignoreList = getIgnoreList(path.dirname(relativePath));
+            
+            if (node.key.type === 'Identifier' && (defaultSafeKeys.includes(node.key.name) || ignoreList.includes(node.key.name))) return;
+            if (node.key.type === 'Literal' && (defaultSafeKeys.includes(node.key.value) || ignoreList.includes(node.key.value))) return;
+
+            if (node.value.type === 'Literal' && typeof node.value.value === 'string') {
+                for (const pattern of patterns) {
+                    if (pattern.regex.test(node.value.value)) {
+                        hardcodedSecrets.push({ 
+                            file: relativePath, 
+                            type: pattern.name, 
+                            line: node.value.loc?.start.line || 0,
+                            trace: getTrace(node.value, content.split('\n')[(node.value.loc?.start.line || 1) - 1] || '')
+                        });
                     }
                 }
             }
-        }
-        
-        walk.simple(ast, {
-            Property(node) {
-                const defaultSafeKeys = ['key', 'name', 'type', 'algorithm', 'side'];
-                const ignoreList = getIgnoreList(path.dirname(relativePath));
-                
-                if (node.key.type === 'Identifier' && (defaultSafeKeys.includes(node.key.name) || ignoreList.includes(node.key.name))) return;
-                if (node.key.type === 'Literal' && (defaultSafeKeys.includes(node.key.value) || ignoreList.includes(node.key.value))) return;
-
-                if (node.value.type === 'Literal' && typeof node.value.value === 'string') {
-                    for (const pattern of patterns) {
-                        if (pattern.regex.test(node.value.value)) {
+        },
+        Literal(node) {
+            if (typeof node.value === 'string') {
+                for (const pattern of patterns) {
+                    if (pattern.regex.test(node.value)) {
+                        if (!hardcodedSecrets.some(s => s.file === relativePath && s.line === (node.loc?.start.line || 0))) {
                             hardcodedSecrets.push({ 
                                 file: relativePath, 
                                 type: pattern.name, 
-                                line: node.value.loc?.start.line || 0,
-                                trace: getTrace(node.value, content.split('\n')[(node.value.loc?.start.line || 1) - 1] || '')
+                                line: node.loc?.start.line || 0,
+                                trace: getTrace(node, content.split('\n')[(node.loc?.start.line || 1) - 1] || '')
                             });
-                        }
-                    }
-                }
-            },
-            Literal(node) {
-                if (typeof node.value === 'string') {
-                    for (const pattern of patterns) {
-                        if (pattern.regex.test(node.value)) {
-                            if (!hardcodedSecrets.some(s => s.file === relativePath && s.line === (node.loc?.start.line || 0))) {
-                                hardcodedSecrets.push({ 
-                                    file: relativePath, 
-                                    type: pattern.name, 
-                                    line: node.loc?.start.line || 0,
-                                    trace: getTrace(node, content.split('\n')[(node.loc?.start.line || 1) - 1] || '')
-                                });
-                            }
-                        }
-                    }
-                }
-            },
-            MemberExpression(node) {
-                if (node.object.type === 'MemberExpression' && node.object.object.name === 'process' && node.object.property.name === 'env') {
-                    let varName = null;
-                    if (node.computed) {
-                        if (node.property.type === 'Literal' && typeof node.property.value === 'string') {
-                            varName = node.property.value;
-                        }
-                    } else {
-                        if (node.property.type === 'Identifier') {
-                            varName = node.property.name;
-                        }
-                    }
-                    
-                    const lineNum = node.loc?.start.line || 0;
-                    const lineContent = content.split('\n')[lineNum > 0 ? lineNum - 1 : 0] || '';
-
-                    if (varName) {
-                        vars.set(varName, { file: relativePath, line: lineNum, trace: getTrace(node, lineContent) });
-
-                        // Next.js 'use client' boundary validation rule
-                        if (isClientComponent && !varName.startsWith('NEXT_PUBLIC_')) {
-                            hardcodedSecrets.push({
-                                file: relativePath,
-                                type: 'CLIENT_BOUNDARY_LEAK',
-                                line: lineNum,
-                                trace: `Client component ('use client') exposed server environment variable: process.env.${varName}. Must be prefixed with NEXT_PUBLIC_.`
-                            });
-                        }
-                    }
-
-                    if (node.property.type === 'TemplateLiteral') {
-                        let resolved = '';
-                        let possible = true;
-                        const expressions = node.property.expressions;
-                        const quasis = node.property.quasis;
-                        for (let i = 0; i < quasis.length; i++) {
-                            resolved += quasis[i].value.cooked;
-                            if (i < expressions.length) {
-                                const expr = expressions[i];
-                                if (expr.type === 'Literal' && typeof expr.value === 'string') resolved += expr.value;
-                                else { possible = false; break; }
-                            }
-                        }
-                        if (possible && resolved) {
-                            vars.set(resolved, { file: relativePath, line: lineNum, trace: getTrace(node, lineContent) });
-                            if (isClientComponent && !resolved.startsWith('NEXT_PUBLIC_')) {
-                                hardcodedSecrets.push({
-                                    file: relativePath,
-                                    type: 'CLIENT_BOUNDARY_LEAK',
-                                    line: lineNum,
-                                    trace: `Client component ('use client') exposed server environment variable: process.env.${resolved}. Must be prefixed with NEXT_PUBLIC_.`
-                                });
-                            }
                         }
                     }
                 }
             }
-        });
-    } catch (e) {
-        return false;
-    }
+        },
+        // Handles process.env.KEY and process.env['KEY']
+        MemberExpression(node) {
+            if (node.object.type === 'MemberExpression' && node.object.object.name === 'process' && node.object.property.name === 'env') {
+                let varName = null;
+                if (node.computed) {
+                    if (node.property.type === 'Literal' && typeof node.property.value === 'string') {
+                        varName = node.property.value;
+                    }
+                } else {
+                    if (node.property.type === 'Identifier') {
+                        varName = node.property.name;
+                    }
+                }
+                
+                const lineNum = node.loc?.start.line || 0;
+                const lineContent = content.split('\n')[lineNum > 0 ? lineNum - 1 : 0] || '';
+
+                if (varName) {
+                    vars.set(varName, { file: relativePath, line: lineNum, trace: getTrace(node, lineContent) });
+
+                    if (isClientComponent && !varName.startsWith('NEXT_PUBLIC_')) {
+                        hardcodedSecrets.push({
+                            file: relativePath,
+                            type: 'CLIENT_BOUNDARY_LEAK',
+                            line: lineNum,
+                            trace: `Client component ('use client') exposed server environment variable: process.env.${varName}. Must be prefixed with NEXT_PUBLIC_.`
+                        });
+                    }
+                }
+            }
+        },
+        // Handles destructuring: const { STRIPE_KEY, OTHER: aliased } = process.env;
+        VariableDeclarator(node) {
+            if (node.init && node.init.type === 'MemberExpression') {
+                if (node.init.object.name === 'process' && node.init.property.name === 'env') {
+                    if (node.id.type === 'ObjectPattern') {
+                        const lineNum = node.loc?.start.line || 0;
+                        const lineContent = content.split('\n')[lineNum > 0 ? lineNum - 1 : 0] || '';
+                        
+                        node.id.properties.forEach(prop => {
+                            const varName = prop.key ? (prop.key.name || prop.key.value) : null;
+                            if (varName && typeof varName === 'string') {
+                                vars.set(varName, { file: relativePath, line: lineNum, trace: getTrace(prop, lineContent) });
+                                if (isClientComponent && !varName.startsWith('NEXT_PUBLIC_')) {
+                                    hardcodedSecrets.push({
+                                        file: relativePath,
+                                        type: 'CLIENT_BOUNDARY_LEAK',
+                                        line: lineNum,
+                                        trace: `Client component ('use client') destructured server environment variable: { ${varName} } from process.env.`
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+
     return true;
 }
 
 /**
  * Scan a single file or a collection of explicit files directly.
  */
-async function scanFile(fullPath, workspaceRoot, vars, hardcodedSecrets, patterns) {
+async function scanFile(fullPath, workspaceRoot, vars, hardcodedSecrets, patterns, counters) {
     const stats = fs.lstatSync(fullPath);
     if (stats.isSymbolicLink() || stats.isDirectory()) return;
     if (stats.size > MAX_FILE_SIZE) return;
 
-    fileCount++;
+    counters.fileCount++;
     const content = fs.readFileSync(fullPath, 'utf8');
     const relativePath = path.relative(workspaceRoot, fullPath);
 
@@ -224,21 +226,21 @@ async function scanFile(fullPath, workspaceRoot, vars, hardcodedSecrets, pattern
 
 /**
  * Scan source directory or an explicit list of target files.
+ * Counters are scoped per invocation to prevent global bleed across runs.
  */
-async function scanSource(dirOrFiles, vars = new Map(), hardcodedSecrets = [], depth = 0, root = null) {
+async function scanSource(dirOrFiles, vars = new Map(), hardcodedSecrets = [], depth = 0, root = null, counters = { fileCount: 0 }) {
     const patterns = getSecretPatterns();
     const workspaceRoot = root || (Array.isArray(dirOrFiles) ? process.cwd() : path.resolve(dirOrFiles));
 
-    // Support explicit array of files (e.g. from --delta git changeset)
     if (Array.isArray(dirOrFiles)) {
         for (const filePath of dirOrFiles) {
             const absolutePath = path.isAbsolute(filePath) ? filePath : path.resolve(workspaceRoot, filePath);
             if (fs.existsSync(absolutePath)) {
-                await scanFile(absolutePath, workspaceRoot, vars, hardcodedSecrets, patterns);
+                await scanFile(absolutePath, workspaceRoot, vars, hardcodedSecrets, patterns, counters);
             }
         }
     } else {
-        if (depth > MAX_DEPTH || fileCount > MAX_FILE_COUNT) return { vars, hardcodedSecrets, schemaViolations: [] };
+        if (depth > MAX_DEPTH || counters.fileCount > MAX_FILE_COUNT) return { vars, hardcodedSecrets, schemaViolations: [] };
 
         const freeMem = os.freemem() / os.totalmem();
         if (freeMem < (1 - MEMORY_THRESHOLD)) {
@@ -262,9 +264,9 @@ async function scanSource(dirOrFiles, vars = new Map(), hardcodedSecrets = [], d
                 }
                 const standardIgnore = ['node_modules', 'dist', 'build', '.next', '.git', '.cache', 'coverage', 'sandbox', 'infra', 'tests', 'out'];
                 if (standardIgnore.includes(file) && depth > 0) continue;
-                await scanSource(fullPath, vars, hardcodedSecrets, depth + 1, workspaceRoot);
+                await scanSource(fullPath, vars, hardcodedSecrets, depth + 1, workspaceRoot, counters);
             } else if (file.match(/\.(tsx|jsx|js|ts|mjs|cjs)$/)) {
-                await scanFile(fullPath, workspaceRoot, vars, hardcodedSecrets, patterns);
+                await scanFile(fullPath, workspaceRoot, vars, hardcodedSecrets, patterns, counters);
             }
         }
     }
@@ -281,7 +283,11 @@ async function scanSource(dirOrFiles, vars = new Map(), hardcodedSecrets = [], d
             const value = process.env[v];
             if (rule.required && !value) schemaViolations.push({ var: v, error: `Missing Required Value`, trace: meta.trace });
             if (value) {
-                if (rule.min_length && value.length < rule.min_length) schemaViolations.push({ var: v, error: `Too Short`, trace: meta.trace });
+                // Support both camelCase and snake_case schema definitions
+                const minLen = rule.minLength || rule.min_length;
+                const prefix = rule.prefix;
+                if (minLen && value.length < minLen) schemaViolations.push({ var: v, error: `Too Short (min ${minLen})`, trace: meta.trace });
+                if (prefix && !value.startsWith(prefix)) schemaViolations.push({ var: v, error: `Prefix Mismatch (expected ${prefix})`, trace: meta.trace });
                 if (rule.regex && !new RegExp(rule.regex).test(value)) schemaViolations.push({ var: v, error: `Format Mismatch`, trace: meta.trace });
             }
         } else {

@@ -31,7 +31,19 @@ async function runSandboxAudit() {
         }
     `);
 
-    // 3. Physical Fixture: Clean server component (Safe)
+    // 3. Physical Fixture: Next.js 'use client' destructured violation
+    const fileDestructureLeak = path.join(fixtureDir, 'client_destructure_leak.tsx');
+    fs.writeFileSync(fileDestructureLeak, `
+        'use client';
+        import React from 'react';
+
+        export function DestructuredClientView() {
+            const { AWS_SECRET_KEY, NEXT_PUBLIC_SAFE } = process.env;
+            return <div>{NEXT_PUBLIC_SAFE}</div>;
+        }
+    `);
+
+    // 4. Physical Fixture: Clean server component (Safe)
     const fileSafeServer = path.join(fixtureDir, 'safe_server_view.tsx');
     fs.writeFileSync(fileSafeServer, `
         import React from 'react';
@@ -45,30 +57,44 @@ async function runSandboxAudit() {
     console.log('[SANDBOX] Running LIVE physical AST scans against test fixtures...');
     const scanResult = await scanSource(fixtureDir);
 
-    console.log(`[SANDBOX] Discovered: ${scanResult.hardcodedSecrets.length} hardcoded/boundary leaks, ${scanResult.hallucinations.length} unmapped variables.`);
+    console.log(`[SANDBOX] Discovered: ${scanResult.hardcodedSecrets.length} hardcoded/boundary leaks.`);
 
-    // Assert: Must have caught Stripe secret
+    // Assert 1: Caught Stripe secret
     const stripeFound = scanResult.hardcodedSecrets.some(s => s.type === 'Stripe' && s.file.includes('leak_component.js'));
     assert(stripeFound, 'FAILED: Did not catch hardcoded Stripe secret in leak_component.js');
     console.log('✅ PASS: Physical Stripe key AST detection.');
 
-    // Assert: Must have caught 'use client' boundary violation
+    // Assert 2: Caught MemberExpression 'use client' boundary violation
     const clientViolationFound = scanResult.hardcodedSecrets.some(s => 
         s.type === 'CLIENT_BOUNDARY_LEAK' && 
         s.file.includes('client_boundary_leak.tsx') &&
         s.trace.includes('DATABASE_PRIVATE_URL')
     );
     assert(clientViolationFound, 'FAILED: Did not catch client boundary leak in client_boundary_leak.tsx');
-    console.log('✅ PASS: Next.js "use client" AST boundary validation.');
+    console.log('✅ PASS: Next.js "use client" MemberExpression boundary validation.');
 
-    // Assert: Must NOT have flagged safe_server_view.tsx as a CLIENT_BOUNDARY_LEAK
+    // Assert 3: Caught Destructured 'use client' boundary violation
+    const destructureViolationFound = scanResult.hardcodedSecrets.some(s => 
+        s.type === 'CLIENT_BOUNDARY_LEAK' && 
+        s.file.includes('client_destructure_leak.tsx') &&
+        s.trace.includes('AWS_SECRET_KEY')
+    );
+    assert(destructureViolationFound, 'FAILED: Did not catch destructured boundary leak in client_destructure_leak.tsx');
+    console.log('✅ PASS: Next.js "use client" ObjectPattern destructuring boundary validation.');
+
+    // Assert 4: Did NOT flag safe_server_view.tsx
     const safeServerFalselyFlagged = scanResult.hardcodedSecrets.some(s => 
         s.file.includes('safe_server_view.tsx') && s.type === 'CLIENT_BOUNDARY_LEAK'
     );
     assert(!safeServerFalselyFlagged, 'FAILED: Falsely flagged server component as client boundary violation');
     console.log('✅ PASS: Server component permitted to read private environment variables.');
 
-    // 4. UI Reporter Sandbox with REAL findings
+    // 5. Test isolated counters (scanSource multiple times should not exhaust fileCount)
+    const secondScan = await scanSource(fixtureDir);
+    assert(secondScan.hardcodedSecrets.length === scanResult.hardcodedSecrets.length, 'FAILED: File counter leaked across scanSource runs');
+    console.log('✅ PASS: Isolated per-scan counter verification.');
+
+    // 6. UI Reporter Sandbox
     console.log('[SANDBOX] Testing HTML Report Generation from real AST scan...');
     const reportPath = generateHtmlReport(__dirname, scanResult, {
         high: scanResult.hardcodedSecrets.length,
@@ -79,7 +105,7 @@ async function runSandboxAudit() {
     assert(fs.existsSync(reportPath), 'FAILED: Report file was not created');
     console.log('✅ PASS: UI Report generated from live AST findings.');
 
-    // 5. Stripe Webhook Verification Sandbox
+    // 7. Stripe Webhook Verification Sandbox
     console.log('[SANDBOX] Testing Stripe Timing-Safe Logic...');
     const mockSecret = 'whsec_test';
     const mockPayload = '{"id": "evt_test"}';
@@ -93,7 +119,7 @@ async function runSandboxAudit() {
     assert(isVerified, 'FAILED: Stripe signature verification failed');
     console.log('✅ PASS: Stripe signature verification verified.');
 
-    // 6. Idempotency Ledger Sandbox
+    // 8. Idempotency Ledger Sandbox
     console.log('[SANDBOX] Testing Idempotency Revenue Guard...');
     const uniqueEventId = `evt_test_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     const mockEvent = { id: uniqueEventId, type: 'payment_intent.succeeded' };
@@ -105,7 +131,7 @@ async function runSandboxAudit() {
     fs.rmSync(fixtureDir, { recursive: true, force: true });
     if (fs.existsSync(reportPath)) fs.unlinkSync(reportPath);
 
-    console.log('--- XORAS PHYSICAL FIXTURE PROTOCOL COMPLETE: 100% OPERATIONAL ---');
+    console.log('--- XORAS PHYSICAL FIXTURE PROTOCOL COMPLETE: OPERATIONAL ---');
 }
 
 runSandboxAudit().catch(err => {
