@@ -1,54 +1,79 @@
-# 🏛️ integrity-sentry-core // Obsidian Gold Command Center
-*The Relational UI & Visual Oversight Dashboard for XORAS Level-4 Pre-Commit Sentries.*
+# 🛡️ XORAS Sentry (`xoras.live`)
+### Zero-Trust Pre-Commit AST Scanner & Secret Leak Prevention
 
-[![UI Dashboard](https://img.shields.io/badge/Command%20Center-Obsidian%20Gold-ffd700?style=flat-square)](https://github.com/aoxendine3/integrity-sentry-core)
+> **Stop leaked keys and hallucinated environment secrets before they leave your laptop.**
+
+[![Production Live](https://img.shields.io/badge/Live-xoras.live-00f2ff?style=flat-square)](https://xoras.live)
+[![NPM Core](https://img.shields.io/badge/npm-xoras--sentry-cb3837?style=flat-square)](https://www.npmjs.com/package/xoras-sentry)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Relational Memory](https://img.shields.io/badge/Memory-SQLite%20B--Tree-00ffcc?style=flat-square)](aether_brain.sqlite)
 
-`integrity-sentry-core` houses the premium Obsidian Gold visual interface and relational telemetry interlink for the XORAS enterprise. It connects directly to your local air-gapped SQLite B-Tree ledger (`aether_brain.sqlite`) to provide instant executive oversight across all staged outbound DevRel accounts and pre-commit security audits.
+---
 
+## ⚡ What is XORAS Sentry?
+
+`xoras-sentry` parses every file into an **Abstract Syntax Tree (AST)** rather than relying on brittle regex pattern matching. It catches real API keys, tokens, and private credentials in Next.js, Node, and TypeScript codebases before they can ever be committed or pushed to GitHub.
+
+- **AST-Powered Precision**: Eliminates false positives by inspecting actual code semantics, variable declarations, and syntax tokens.
+- **Dynamic `process.env` Hallucination Guard**: Traces hidden environment variables and flags unmapped server secrets attempting to slip into client bundles.
+- **100% Local-First**: No code, tokens, or telemetry leave your machine.
+- **Zero-Friction Git Integration**: Operates as a native pre-commit hook and automated GitHub Action check.
+
+---
+
+## 🚀 Quickstart
+
+### 1. Instant Local Scan
+Run an immediate audit across your current directory:
 ```bash
-# Launch the Obsidian Gold Command Center locally
-npm run dev
-```
-
----
-
-## ⚡ Core Interface Features
-
-### 1. Relational Telemetry Synchronization
-Pulls live pipeline aggregates (Staged Leads, Active PR Submissions in Review, Won Deals) in real-time from `aether_brain.sqlite` without uploading a single byte to external cloud servers.
-
-### 2. Glassmorphism Visual Architecture
-Engineered with premium dark-mode styling (`--bg-base: #07070a`), gold accent glowing borders (`#ffd700`), and interactive terminal execution logs that give you complete transparency into daemon activity.
-
-### 3. AST Secret Hallucination Guard
-Visualizes deep AST traces and unmapped `process.env` references identified during pre-commit scans across your local development grid.
-
----
-
-## 💼 Commercial Enterprise Pilot ($2,000 Level-4 Sentry)
-We deploy custom, high-throughput pre-commit and post-build sentries tailored to your enterprise infrastructure.
-
-**⚡ Open-Source Maintainer & Early Adopter Incentive:**
-If your team actively maintains open-source infrastructure or is onboarding to our Level-4 sentry suite, we waive our $500 setup fee and offer a **50% discount on your first quarter pilot** ($1,000 total).
-
-📧 **Direct Contact**: [Connect with Anthony via LinkedIn / Email](mailto:arvant.apex@gmail.com) | [XORAS Institutional Portal](https://aoxendine3.github.io/)
-
----
-
-## 🛠️ CLI Execution Commands
-
-```bash
-# Standard AST structural secret audit
 npx xoras-sentry .
+```
 
-# Generate an interactive HTML report
+### 2. Fast Delta Scan (Git Branch)
+Scan only the modified delta files in your active branch (sub-millisecond execution):
+```bash
+npx xoras-sentry --delta
+```
+
+### 3. Generate Interactive Visual Report
+Produce an interactive HTML compliance report:
+```bash
 npx xoras-sentry . --html
-
-# Fast Mode: Scan only modified delta files in git branch
-npx xoras-sentry . --delta
 ```
 
 ---
-*Secured by XORAS C-Vector Core. All telemetry verified.*
+
+## 📦 Monorepo Architecture
+
+```
+xoras-sentry/
+├── apps/
+│   └── web/                # Next.js 16 web application backing https://xoras.live
+├── packages/
+│   ├── core/               # AST parser, cryptographic attestation, entropy analyzer
+│   ├── cli/                # Terminal interface and executable binary
+│   ├── ui/                 # Static report visualization engine
+│   ├── integrations/       # Git pre-commit hooks and GitHub Actions runners
+│   ├── api/                # TRPC audit routers
+│   └── db/                 # Audit state and schema definitions
+└── tests/                  # Deterministic unit and adversarial test suites
+```
+
+---
+
+## 🛠️ Commands & Scripts
+
+```bash
+# Run unit & adversarial test suites
+npm test
+
+# Build production web bundle (Next.js Turbopack)
+npm run build
+
+# Run local pre-commit hook audit
+npm run audit
+```
+
+---
+
+## 🔒 Security & Support
+To report vulnerabilities or request custom institutional deployment, review [SECURITY.md](SECURITY.md) or visit [xoras.live](https://xoras.live).
