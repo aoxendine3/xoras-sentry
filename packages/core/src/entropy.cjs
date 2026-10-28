@@ -18,30 +18,41 @@ function calculateEntropy(str) {
 }
 
 /**
- * Audit content for high-entropy 'Zombie' strings.
+ * Audit content for high-entropy 'Zombie' credential strings.
+ * Constrained by syntax heuristics to avoid false positives on SVGs, CSS classes, and UUIDs.
  */
 function auditEntropy(content, relativePath, hardcodedSecrets) {
-    // Regex for strings in quotes (20-100 chars)
-    const stringRegex = /['"]([a-zA-Z0-9+/=]{20,100})['"]/g;
+    // Targeted Regex: Only evaluate entropy when string is assigned to or keyed by credential-related tokens
+    const assignmentRegex = /(?:key|secret|token|password|auth|credential|api|private|hash|signature)[\w\s.:='"]{0,30}['"]([a-zA-Z0-9+/=_-]{24,100})['"]/gi;
     let match;
 
     const lines = content.split('\n');
     lines.forEach((line, i) => {
-        while ((match = stringRegex.exec(line)) !== null) {
+        // Skip obvious comments, markdown headers, and SVG paths
+        const trimmed = line.trim();
+        if (trimmed.startsWith('//') || trimmed.startsWith('*') || trimmed.startsWith('#')) return;
+        if (line.includes('<path') || line.includes('d="M') || line.includes('fill="')) return;
+
+        while ((match = assignmentRegex.exec(line)) !== null) {
             const str = match[1];
+            // Exclude common file paths, URLs, and CSS definitions
+            if (str.includes('/') || str.includes('\\') || str.includes(' ')) continue;
+
             const entropy = calculateEntropy(str);
             
-            // Threshold: 4.0 bits (High randomness)
-            // Exclude common file paths/names
-            if (entropy > 4.0 && !str.includes('/') && !str.includes('\\')) {
-                hardcodedSecrets.push({
-                    file: relativePath,
-                    type: `POTENTIAL_ZOMBIE (Entropy: ${entropy.toFixed(2)})`,
-                    line: i + 1
-                });
+            // Threshold: 4.2 bits of Shannon entropy on credential assignments
+            if (entropy > 4.2) {
+                if (!hardcodedSecrets.some(s => s.file === relativePath && s.line === i + 1)) {
+                    hardcodedSecrets.push({
+                        file: relativePath,
+                        type: `POTENTIAL_HIGH_ENTROPY_SECRET (Entropy: ${entropy.toFixed(2)})`,
+                        line: i + 1,
+                        trace: `High randomness string detected in credential assignment: ${str.slice(0, 8)}...`
+                    });
+                }
             }
         }
     });
 }
 
-module.exports = { auditEntropy };
+module.exports = { auditEntropy, calculateEntropy };
