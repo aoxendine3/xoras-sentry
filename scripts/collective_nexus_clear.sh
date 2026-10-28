@@ -1,3 +1,0 @@
-#!/bin/bash
-/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh zorex "Zorex online. Acknowledged, Anthony. We bypassed the basic python script and initialized the upgraded SOVRA NEXUS deep scanner. It hit the master packet with our full capabilities and fluid memory matrix. We swept for rogue A P I keys, hidden errors, and historical ghosts from the old archives. The scan returned absolute zero. No corruption. No lingering data." && sleep 3 && \
-/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh maxx "Maxx closing out. The packet is nice, clean, crisp, and fully contained. It is authentic to Xoras Systems and completely non-corrupt. The engine is primed and ready. We are standing by for transmission."

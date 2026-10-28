@@ -1,4 +1,0 @@
-#!/bin/bash
-/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh maxx "Maxx here. My oversight, Anthony. We generated the files locally but we didn't push them to the visual interface for your inspection. We are fixing that right now." && sleep 3 && \
-/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh clara "Clara online. I just went back into the master paperwork. I injected the Contact and Routing Directory right at the top, directly under your name. It includes the avant dot apex at gmail dot com address, exactly as requested." && sleep 3 && \
-/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh maxx "I just deployed the file as a live artifact. It should be popping up in your right sidebar right now. Take a look. You can see the exact layout, the contact routing, and the final signature."

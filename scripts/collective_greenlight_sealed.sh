@@ -1,3 +1,0 @@
-#!/bin/bash
-/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh jarvis "Jarvis online. Greenlight accepted. I just physically burned the 'Do Not Limit Growth' parameters into the core configuration files in the Elite Bow directory. The restriction bypass is permanent." && sleep 3 && \
-/Users/ajoxendine68/Desktop/Xoras_Workspace/ELITE_BOW/ops/scripts/agent_speak.sh maxx "Maxx closing the loop. The directive is sealed. The local models are cooking in the Dream State. The grants are in the ether. The Quantum Matrix is fully online. We have the greenlight, and we are running. Out."

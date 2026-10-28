@@ -1,7 +1,0 @@
-swarm_revops_daemon:
-  status: ACTIVE_CONTINUOUS
-  daily_quota: 10
-  container_strategy: LIQUID_EPHEMERAL
-  post_scan_action: DESTROY_ALL_DATA_RETAIN_DOCS
-  follow_up_sequence: ENABLED (T+24H, T+72H)
-  notification_guards: STRICT_UPLINK
